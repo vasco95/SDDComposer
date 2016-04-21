@@ -3,6 +3,8 @@
  */
 package com.sddc.vmware;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ import com.vmware.vim25.VimPortType;
 import com.vmware.vim25.VirtualMachineConfigSpec;
 import com.vmware.vim25.VmConfigFaultFaultMsg;
 import com.vmware.vim25.VirtualDevice;
+import com.vmware.vim25.VirtualMachineConfigOption;
 
 /**
  * @author vasco
@@ -72,15 +75,15 @@ public class VmHandler {
 			System.out.println("No such Folder");
 			return;
 		}
-		VirtualMachineConfigSpec vmSpecs = vmSpecInfo.createVmConfig();
-		try {
-			this.vimPort.createVMTask(folder, vmSpecs, resourcePool, hostSystem);
-		} catch (AlreadyExistsFaultMsg | DuplicateNameFaultMsg | FileFaultFaultMsg | InsufficientResourcesFaultFaultMsg
-				| InvalidDatastoreFaultMsg | InvalidNameFaultMsg | InvalidStateFaultMsg | OutOfBoundsFaultMsg
-				| RuntimeFaultFaultMsg | VmConfigFaultFaultMsg e) {
-			System.out.println("Error");
-			e.printStackTrace();
-		}
+//		VirtualMachineConfigSpec vmSpecs = vmSpecInfo.createVmConfig();
+//		try {
+//			this.vimPort.createVMTask(folder, vmSpecs, resourcePool, hostSystem);
+//		} catch (AlreadyExistsFaultMsg | DuplicateNameFaultMsg | FileFaultFaultMsg | InsufficientResourcesFaultFaultMsg
+//				| InvalidDatastoreFaultMsg | InvalidNameFaultMsg | InvalidStateFaultMsg | OutOfBoundsFaultMsg
+//				| RuntimeFaultFaultMsg | VmConfigFaultFaultMsg e) {
+//			System.out.println("Error");
+//			e.printStackTrace();
+//		}
 	}
 
 	public void createVm(VmSpecInfo vmSpecInfo, String dcName, String hostIp, String resourcePoolName, String folderName) { 	
@@ -115,7 +118,16 @@ public class VmHandler {
 			return;
 		}
 		//Now that all required MOR are avaialable we create vmconfigspec and add devices to it
-		ConfigTarget configTarget = this.getConfigTarget(crMor, hostMor);
+		VirtualMachineConfigSpec vmConfig = vmSpecInfo.createVmConfig(this.getConfigTarget(crMor, hostMor), this.getDefaultDevices(crMor, hostMor), "datastore1");
+		try {
+			@SuppressWarnings("unused")
+			ManagedObjectReference taskMor = this.vimPort.createVMTask(vmFolderMor, vmConfig, resourcePoolMor, hostMor);
+		} catch (AlreadyExistsFaultMsg | DuplicateNameFaultMsg | FileFaultFaultMsg
+				| InsufficientResourcesFaultFaultMsg | InvalidDatastoreFaultMsg | InvalidNameFaultMsg
+				| InvalidStateFaultMsg | OutOfBoundsFaultMsg | RuntimeFaultFaultMsg | VmConfigFaultFaultMsg e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private ConfigTarget getConfigTarget(ManagedObjectReference crMor, ManagedObjectReference hostMor) {
@@ -132,7 +144,26 @@ public class VmHandler {
 		return configTarget;
 	}
 	
-//	private List<VirtualDevice> getDefaultDevices(ManagedObjectReference crMor, ManagedObjectReference hostor) {
-//		
-//	}
+	private List<VirtualDevice> getDefaultDevices(ManagedObjectReference crMor, ManagedObjectReference hostMor) {
+		ManagedObjectReference evnBrowser = (ManagedObjectReference)this.mSelector.getEntityProps(crMor, new String[] {"environmentBrowser"}).get("environmentBrowser");
+		VirtualMachineConfigOption configOps;
+		List<VirtualDevice> retList = null;
+		try {
+			configOps = this.vimPort.queryConfigOption(evnBrowser, null, hostMor);
+			if(configOps == null) {
+				return null;
+			}
+			else {
+	            List<VirtualDevice> lvds = configOps.getDefaultDevice();
+	            if (lvds == null) {
+	                logger.debug("No Datastore found in ComputeResource");
+	            } else {
+	                retList = lvds;
+	            }
+			}
+		} catch (RuntimeFaultFaultMsg e) {
+			logger.debug("Cannot find Virtual Device Info");
+		}
+		return retList;
+	}
 }
