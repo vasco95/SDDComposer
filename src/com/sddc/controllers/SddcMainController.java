@@ -39,7 +39,6 @@ import com.sddc.models.NetworkRealizer;
 import com.sddc.models.datacollectors.JsonGraph;
 import com.sddc.models.datacollectors.UserDesignInput;
 import com.sddc.models.datacollectors.Users;
-import com.sddc.vmware.VsphereConnector;
 import com.sddc.vmware.VsphereTester;
 
 @Controller

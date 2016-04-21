@@ -1,9 +1,11 @@
 package com.sddc.vmware;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import javax.xml.ws.BindingProvider;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vmware.vim25.InvalidLocaleFaultMsg;
 import com.vmware.vim25.InvalidLoginFaultMsg;
 import com.vmware.vim25.ManagedObjectReference;
@@ -12,6 +14,8 @@ import com.vmware.vim25.ServiceContent;
 import com.vmware.vim25.UserSession;
 import com.vmware.vim25.VimPortType;
 import com.vmware.vim25.VimService;
+
+
 	
 public class VsphereConnector {
 	//Login Credentials
@@ -30,16 +34,19 @@ public class VsphereConnector {
 	VimPortType vimPort;
 	ServiceContent serviceContent;
 	ManagedObjectReference serviceInstance = null;
-		
+
+	//Logger
+	private static final Logger logger = LoggerFactory.getLogger(VsphereConnector.class);
+	
 	public VsphereConnector() {
 		VcenterLoginCredentials fileLogin = new VcenterLoginCredentials("./SddcConfig.xml");
 		this.vcenterServer = fileLogin.getServerIp();
 		this.userName = fileLogin.getUserName();
 		this.passWord = fileLogin.getPassWord();
 		this.url = "https://" + this.vcenterServer + "/sdk/vimService";
-		System.out.print(this.vcenterServer);
-		System.out.print(this.userName);
-		System.out.print(this.passWord);
+		logger.info(this.vcenterServer);
+		logger.info(this.userName);
+		logger.info(this.passWord);
 	}
 	
 	/**
@@ -119,7 +126,6 @@ public class VsphereConnector {
         ManagedObjectReference serviceInstance = this.getServiceInstance();
 
         try {
-        	DisableSecurity.trustEveryone();
             this.serviceContent = vimPort.retrieveServiceContent(serviceInstance);
             this.userSession = vimPort.login(this.serviceContent.getSessionManager(), this.userName, this.passWord, null);
         } catch (RuntimeFaultFaultMsg e) {
@@ -128,11 +134,7 @@ public class VsphereConnector {
             e.printStackTrace();
         } catch (InvalidLoginFaultMsg e) {
             e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
+        }
 	}
 	
 	public boolean isConnected() {

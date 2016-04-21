@@ -208,10 +208,8 @@ class MOREFSelector {
 	            }
 	        }
 		} catch (InvalidPropertyFaultMsg e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (RuntimeFaultFaultMsg e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ret;

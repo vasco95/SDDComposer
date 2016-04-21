@@ -13,17 +13,9 @@ public class VsphereTester {
 		vcon.printApiInfo();
 		VimPortType vimPort = vcon.getVimPort();
 		ServiceContent serviceContent = vcon.getServiceContent();
-		MOREFSelector mSelector = new MOREFSelector(vimPort, serviceContent);
-		ManagedObjectReference dc = mSelector.getMOREFByName(serviceContent.getRootFolder(), "Datacenter", "hostNetwork");
-		Map<String, Object> ret = mSelector.getEntityProps(dc, new String[] {"parent"});
-		if(ret.isEmpty()) {
-			System.out.println("Empty");
-		}
-		else {
-			System.out.println("NE ");
-			ManagedObjectReference parent = (ManagedObjectReference)ret.get("parent");
-			System.out.println(parent.getValue());
-		}
+		VmHandler vmHandler = new VmHandler(vimPort, serviceContent);
+		VmSpecInfo vmSpecInfo = new VmSpecInfo("mytestVm3", new Long(1024), 2, "windows7Guest");
+		vmHandler.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45", "Resources", "vm");
 		vcon.disconnect();
 	}
 }
