@@ -17,9 +17,6 @@ import com.vmware.vim25.VimPortType;
  */
 public class NetworkRealizer {
 	private Graph graph;
-	private String userName = null;
-	private String passWord = null;
-	private String serverIp = null;
 	
 	private VsphereConnector vsphereConnector;
 	public NetworkRealizer(Graph graph) {
@@ -29,20 +26,9 @@ public class NetworkRealizer {
 	 * Intialize connection with vcenter server
 	 */
 	private void init() {
-		if(this.serverIp == null || this.userName == null || this.passWord == null) {
-			this.vsphereConnector = new VsphereConnector();
-		}
-		else {
-			this.vsphereConnector = new VsphereConnector(this.serverIp, this.userName, this.passWord);
-		}
+		this.vsphereConnector = new VsphereConnector();
 		this.vsphereConnector.connect();
 		this.vsphereConnector.printApiInfo();
-	}
-	
-	public void getLoginCredentials(String ip, String username, String password) {
-		this.serverIp = ip;
-		this.userName = username;
-		this.passWord = password;
 	}
 	
 	/**

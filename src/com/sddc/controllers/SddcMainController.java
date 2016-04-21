@@ -40,6 +40,7 @@ import com.sddc.models.datacollectors.JsonGraph;
 import com.sddc.models.datacollectors.UserDesignInput;
 import com.sddc.models.datacollectors.Users;
 import com.sddc.vmware.VsphereConnector;
+import com.sddc.vmware.VsphereTester;
 
 @Controller
 @Scope("session")
@@ -66,6 +67,7 @@ public class SddcMainController {
 	@RequestMapping("/")
 	public String hello()
 	{
+		VsphereTester.test();
 		return "welcomepage";
 	}
 

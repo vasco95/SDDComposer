@@ -1,6 +1,7 @@
 package com.sddc.vmware;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,5 +179,41 @@ class MOREFSelector {
 	public ManagedObjectReference getMOREFByName(ManagedObjectReference rootFolder, String morefType, String name) {
 		Map<String, ManagedObjectReference> retmap = this.getMORF(rootFolder, morefType);
 		return retmap.get(name);
+	}
+
+	public Map<String, Object> getEntityProps(ManagedObjectReference entityMor, String[] props) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		//create proprty specifications
+		PropertySpec propSpec = new PropertySpec();
+		propSpec.setType(entityMor.getType());
+		propSpec.setAll(false);
+		propSpec.getPathSet().addAll(Arrays.asList(props));
+		//create object specification
+		ObjectSpec objSpec = new ObjectSpec();
+		objSpec.setObj(entityMor);
+		//create property filter specification list
+		List<PropertyFilterSpec> fSpecList = new ArrayList<PropertyFilterSpec>();
+		PropertyFilterSpec propFilter = new PropertyFilterSpec();
+		propFilter.getPropSet().add(propSpec);
+		propFilter.getObjectSet().add(objSpec);
+		fSpecList.add(propFilter);
+		try {
+			List<ObjectContent> oContent = vimPort.retrievePropertiesEx(serviceContent.getPropertyCollector(), fSpecList, new RetrieveOptions()).getObjects();
+			if (oContent != null) {
+	            for (ObjectContent oc : oContent) {
+	                List<DynamicProperty> dps = oc.getPropSet();
+	                for (DynamicProperty dp : dps) {
+	                    ret.put(dp.getName(), dp.getVal());
+	                }
+	            }
+	        }
+		} catch (InvalidPropertyFaultMsg e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RuntimeFaultFaultMsg e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
 	}
 }

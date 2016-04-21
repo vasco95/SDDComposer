@@ -25,21 +25,21 @@ public class VsphereConnector {
 	private String apiVersion = "6.0.0.0";
 	private String servType = "VirtualCenter";
 	
-	//Management Objects
+	//ManagVsphereTester.test();ement Objects
 	VimService vimService;
 	VimPortType vimPort;
 	ServiceContent serviceContent;
 	ManagedObjectReference serviceInstance = null;
-	
-	//Managed Object Selector
-	MOREFSelector mSelector;
-	
+		
 	public VsphereConnector() {
 		VcenterLoginCredentials fileLogin = new VcenterLoginCredentials("./SddcConfig.xml");
 		this.vcenterServer = fileLogin.getServerIp();
 		this.userName = fileLogin.getUserName();
 		this.passWord = fileLogin.getPassWord();
 		this.url = "https://" + this.vcenterServer + "/sdk/vimService";
+		System.out.print(this.vcenterServer);
+		System.out.print(this.userName);
+		System.out.print(this.passWord);
 	}
 	
 	/**
@@ -122,7 +122,6 @@ public class VsphereConnector {
         	DisableSecurity.trustEveryone();
             this.serviceContent = vimPort.retrieveServiceContent(serviceInstance);
             this.userSession = vimPort.login(this.serviceContent.getSessionManager(), this.userName, this.passWord, null);
-            this.mSelector = new MOREFSelector(this.vimPort, this.serviceContent);
         } catch (RuntimeFaultFaultMsg e) {
             e.printStackTrace();
         } catch (InvalidLocaleFaultMsg e) {
