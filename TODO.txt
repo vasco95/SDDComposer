@@ -1,0 +1,29 @@
+1. Convert the json string into java object
+	i. Design proper java class to hold the information	-done
+	ii. choose proper parser to convert json to java object - done
+	iii. validate the object -??
+	
+2. Make new design work properly
+	i. Get the data from user - done
+	ii. Update databases accordingly
+		1. inserting new design -done
+		2. getting list of all designs -done
+		3. get latest design -pending add date attribute
+	iii. redirect to proper address-done
+	
+3. Check redirect in mvc -done 
+
+4. vsphere sdk
+	i> Connection to vcenter server requires VimPortType object which acts as interface to vcenter services
+	ii> Managed objects at vcenter side are accessed using managedobjectreference at client side
+	iii> Data objects are required for managing data interfacing between the client and server
+	iv> Managed Object at server side is accessed through "ServiceInstance" object
+		Data Object through "ServiceContent"
+		
+		
+Imp docs
+
+ManagedObjectReference - for accessing managed objects at server (ie Getting a "SeviceInstance")
+VimServiceLocator - for identifying and accessing vcenter webservice
+VimPortType - endpoint for accessing the service. the object is obtained from VimServiceLocator
+ServiceContent - Accesses managed object services

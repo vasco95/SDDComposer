@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+   <!-- Bootstrape Includes -->
+   <link rel="stylesheet" href="../../resources/css/bootstrap.min.css" th:href="@{/resources/css/bootstrap.min.css}">
+   <script src="../../resources/js/jquery-2.2.0.min.js" th:src="@{/resources/js/jquery-2.2.0.min.js}"></script>
+   <script src="../../resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
+   <link href="../../resources/css/bootstrap-toggle.min.css" th:href="@{/resources/css/bootstrap-toggle.min.css}" rel="stylesheet">
+   <script src="../../resources/js/bootstrap-toggle.min.js" th:src="@{/resources/js/bootstrap-toggle.min.js}"></script>
+   <script src="../../resources/js/bootstrap-select.js" th:src="@{/resources/js/bootstrap-select.js}"></script>
+   <link href="../../resources/css/bootstrap-select.css" th:href="@{/resources/css/bootstrap-select.css}" rel="stylesheet">
+
+   <script src="../../resources/js/vivagraph.min.js" th:src="@{/resources/js/vivagraph.min.js}"></script>
+
+   <link rel="stylesheet" href="../../resources/css/style.css" th:href="@{/resources/css/style.css}">
+
+   <style type="text/css" media="screen">
+	svg { width: inherit; height: inherit;}
+   </style>
+   <title>Software Data Center Composer</title>
+</head>
+
+<body onload="init()">
+   <div class="container-fluid">
+      <div class="page-header">
+         <img id="logo-main" src="../../resources/images/logo.png" th:src="@{/resources/images/logo.png}" width="300" height="70" alt="SDD Composer">
+      </div>
+      <nav class="navbar navbar-inverse">
+         <div class="container-fluid">
+            <!-- <div class="navbar-header">
+               <a class="navbar-brand" href="#">WebSiteName</a>
+            </div> -->
+            <ul class="nav navbar-nav">
+               <li><a href="home.html" th:href="@{/home}">Home</a></li>
+               <li class="active"><a href="design.html" th:href="@{/design}">Design</a></li>
+               <li><a href="help.html" th:href="@{/help}">Help</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+               <li><a href="about.html" th:href="@{/about}">About</a></li>
+               <li><a href="login.html" th:href="@{/logout}">Logout</a></li>
+            </ul>
+         </div>
+      </nav>
+   </div>
+   <div class="container-fluid">
+      <div class="row">
+         <div class="col-xs-2">
+            <div class="sidebar-nav">
+               <div class="navbar navbar-default" role="navigation">
+                  <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                     <ul class="nav navbar-nav">
+                        <li id="addVm"><a>New VM</a></li>
+                        <li id="addRouter"><a>New Router</a></li>
+                        <li id="addSubnet"><a>New Subnet</a></li>
+                        <li><a>Route: <input data-toggle="toggle" type="checkbox"  id="connectionToggle" name="editOption"></a></li>
+                        <li id="save"><a>Save</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="col-xs-10 full">
+            <nav class="navbar navbar-default">
+               <div class="container-fluid">
+                  <ul class="nav navbar-nav">
+                     <li><a>Getting Started</a></li>
+                     <li><a class="dropdown-toggle" data-toggle="dropdown" href="#">Create a new Network</a>
+                        <ul class="dropdown-menu">
+                           <li><a data-target="#blankDesign" data-toggle="modal" href="#blankDesign">Blank network</a></li>
+                           <li><a href="#">Use Existing Template</a></li>
+                        </ul>
+                     </li>
+                     <li><a data-target="#userDesigns" data-toggle="modal" href="#userDesign">My Networks</a></li>
+                     <li id="realize"><a>Realize</a></li>
+                  </ul>
+               </div>
+            </nav>
+            <h4><small>Current Design:</small><strong id="currDesign" th:text="${graph.name}"> </strong></h4>
+            <div id="sketch">
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal fade" id="blankDesign" role="dialog">
+      <div class="modal-dialog">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dixsiss="modal">&times;</button>
+               <h4 class="modal-title">Creat new design</h4>
+            </div>
+            <div class="modal-body">
+               <form class="form-horizontal" role="form" th:object="${graph}" action="#" th:action="@{/newdesign}" method="post">
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="dname">Design Name: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" id="dname" placeholder="Name" th:field="*{name}" required>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="desc">Description: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" id="desc" placeholder="Description" th:field="*{description}">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-xs-offset-3 col-xs-9">
+                        <button type="submit" class="btn btn-default">Submit</button>
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <!-- <div class="modal-footer">
+               <button type="button" class="btn btn-default" data-dixsiss="modal">Close</button>
+            </div> -->
+         </div>
+      </div>
+   </div>
+
+   <div class="modal fade" id="userDesigns" role="dialog">
+      <div class="modal-dialog">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dixsiss="modal">&times;</button>
+               <h4 class="modal-title">Select a Design</h4>
+            </div>
+            <div class="modal-body">
+               <form class="form-horizontal" role="form" th:object="${userDesignInput}" action="#" th:action="@{/userdesign}" method="post">
+                  <div class="form-group">
+                     <div class="col-xs-offset-1">
+                        <select th:field="*{designId}" class="selectpicker" data-live-search="true" id="designName" name="designName" data-width="auto">
+                           <option th:each="userDesign : ${userGraphDropDown}" th:value="${userDesign.key}" th:text="${userDesign.value}" />
+                        </select>
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-xs-offset-1">
+                        <button type="submit" class="btn btn-default">Submit</button>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="modal fade" id="editVm" role="dialog">
+      <div class="modal-dialog">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dixsiss="modal">&times;</button>
+               <h4 class="modal-title">Edit VM Options</h4>
+            </div>
+            <div class="modal-body">
+               <form class="form-horizontal" role="form" action="#" id="editVmDesign">
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="vmname">VM Name: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" name="vmname" id="vmname" placeholder="VM Name">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="ostype">Operating System: </label>
+                     <div class="col-xs-9">
+                        <select class="selectpicker" id="ostype" name="ostype" data-width="auto">
+                           <option value="linux">Linux</option>
+                           <option value="windows">Windows</option>
+                           <option value="mac">Mac</option>
+                           <option value="other">Other</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="cpucores">CPU Cores: </label>
+                     <div class="col-xs-9">
+                        <select class="selectpicker" id="cpucores" name="cpucores" data-width="auto">
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                           <option value="3">3</option>
+                           <option value="4">4</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="form group">
+                     <label class="control-label col-xs-3" for="ram">RAM(MB): </label>
+                     <div class="col-xs-7">
+                        <input id="ram" name="ram" type="range" min="0" max="4096">
+                     </div>
+                     <div id="rambox" class="col-xs-2">2048</div>
+                  </div>
+                  <div class="form-group">
+                  </div>
+                  <div class="form group">
+                     <label class="control-label col-xs-3" for="storage">Storage(GB): </label>
+                     <div class="col-xs-7">
+                        <input id="storage" name="storage" type="range" min="0" max="200">
+                     </div>
+                     <div id="storagebox" class="col-xs-2">100</div>
+                  </div>
+                  <div class="form-group">
+                  </div>
+                  <div class="form-group">
+                     <div class="col-xs-offset-3 col-xs-7">
+                        <button type="button" class="btn btn-default" onclick="editVm()">Submit</button>
+                        <button type="button" class="btn btn-default" onclick="deleteNode()">Delete</button>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="modal fade" id="editRouter" role="dialog">
+      <div class="modal-dialog">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dixsiss="modal">&times;</button>
+               <h4 class="modal-title">Edit Router Options</h4>
+            </div>
+            <div class="modal-body">
+               <form class="form-horizontal" role="form" action="#" id="editRouterDesign">
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="routername">Router Name: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" name="routername" id="routername" placeholder="Router Name">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-xs-offset-3 col-xs-7">
+                        <button type="button" class="btn btn-default" onclick="editRouter()">Submit</button>
+                        <button type="button" class="btn btn-default" onclick="deleteNode()">Delete</button>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="modal fade" id="editSubnet" role="dialog">
+      <div class="modal-dialog">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dixsiss="modal">&times;</button>
+               <h4 class="modal-title">Edit Router Options</h4>
+            </div>
+            <div class="modal-body">
+               <form class="form-horizontal" role="form" action="#" id="editSubnetDesign">
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="subnetname">Subnet Name: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" name="subnetname" id="subnetname" placeholder="Subnet Name">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-xs-offset-3 col-xs-7">
+                        <button type="button" class="btn btn-default" onclick="editSubnet()">Submit</button>
+                        <button type="button" class="btn btn-default" onclick="deleteNode()">Delete</button>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+
+	<form id="graphForm" role="form" th:object="${graph}" action="#" th:action="@{/test}" method="post">
+		<input type="hidden" id="jsonGraph" name="jsonGraph" th:field="*{jsonGraph}" required>
+	</form>
+   <p id="jgraph" th:text="${jgraph}" hidden></p>
+   <script src="../../resources/js/vivadesign.js" th:src="@{/resources/js/vivadesign.js}"></script>
+   <script type="text/javascript">
+      $("#ram").on("change mousemove", function() {
+         $("#rambox").html($(this).val());
+      });
+      $("#storage").on("change mousemove", function() {
+         $("#storagebox").html($(this).val());
+      });
+   </script>
+</body>
+</html>

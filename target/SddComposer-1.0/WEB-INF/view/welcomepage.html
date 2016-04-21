@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- Style Sheets -->
+    <link rel="stylesheet" type="text/css" href="css/design.css" th:href="@{/resources/css/design.css}">
+    <link rel="stylesheet" type="text/css" href="css/joint.css" th:href="@{/resources/css/joint.css}">
+    <!-- <link rel="stylesheet" type="text/css" href="css/style.css"> -->
+
+    <!-- JavaScripts -->
+    <script src="js/jointjs/jquery.min.js" th:src="@{/resources/js/jointjs/jquery.min.js}"></script>
+    <script src="js/jointjs/lodash.min.js" th:src="@{/resources/js/jointjs/lodash.min.js}"></script>
+    <script src="js/jointjs/backbone-min.js" th:src="@{/resources/js/jointjs/backbone-min.js}"></script>
+    <script src="js/jointjs/joint.js" th:src="@{/resources/js/jointjs/joint.js}"></script>
+    <title>Software Data Center Composer</title>
+</head>
+
+<body onload="init()">
+    <div id="header">
+        <h1>Software Data Center Composer</h1>
+    </div>
+    <!-- Horizontal Navigation -->
+    <div>
+      <ul class="horizontal_nav">
+         <li><a href="home.html">Home</a></li>
+         <li><a href="design.html" class="active">Design</a></li>
+         <li><a href="help.html">Help</a></li>
+         <ul style="float:right;list-style-type:none;">
+            <li><a href="about.html">About</a></li>
+         </ul>
+      </ul>
+    </div>
+    <!-- Design Tools -->
+    <!-- <div id="horizontal_nav">
+        <br><br>
+        <input type="image" src="images/router.png" width="63" height="58" id="addRouter"/><br><br>
+        <input type="image" src="images/vm.png" width="74" height="70" id="addVm"/><br><br>
+        <input type="image" src="images/storage.png" width="80" height="67" id="addStorage"/><br><br>
+        Routing
+        <input class="tgl tgl-ios" id="connectionToggle" type="checkbox" onchange="addConnection()">
+        <label class='tgl-btn' for='connectionToggle'></label>
+    </div> -->
+    <div class="design_pad">
+      <ul class="vertical_nav">
+         <li><a href="#contact">Getting Started</a></li>
+         <!-- Try putting some animation or illustration or demo like thing here -->
+         <li><a href="#news">Create a new Network</a>
+            <ul>
+               <li><a href="#newDesignForm">Blank Design</a></li>
+               <li><a href="#about">Use an existing template</a></li>
+            </ul>
+         </li>
+         <!-- This is where we keep current design -->
+         <li><a href="#contact" class="active">Active</a></li>
+         <!-- Here we need to explore some options like new design and getting design from template -->
+         <li><a href="#contact">My Designs</a></li>
+         <!-- We are supposed to show already made (and saved) designs by users -->
+      </ul>
+      <!-- Here we put toolbox for drawing in form of horizontal_nav-->
+      <ul class="inner_horizontal_nav">
+         <li>
+            <a>+</a>
+            <ul>
+               <li id="addVm"><a>Virtual Machine</a></li>
+               <li id="addRouter"><a>Router</a></li>
+               <li id="addStorage"><a>Storage</a></li>
+            </ul>
+         </li>
+         <li><a>-</a></li>
+         <li><a>Route</a></li>
+         <div class="onoffswitch">
+            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="connectionToggle" checked>
+            <label class="onoffswitch-label" for="connectionToggle"></label>
+         </div>
+         <button type="button">Realize</button>
+      </ul>
+      <div id="sketch" class="sketch_pad">
+      </div>
+      <div id="newDesignForm" class="newDesignModal">
+         <div>
+            <a href="#close" title="Close" class="close">X</a>
+            <h2>Create a New Design</h2>
+            <form>
+               <label for="dname">Design Name</label>
+               <input type="text" id="dname" name="dname">
+               <label for="desc">Description</label>
+               <input type="text" id="desc" name="desc">
+               <label for="owner">Owner</label>
+               <input type="text" id="owner" name="owner">
+               <input type="submit" value="Submit">
+            </form>
+         </div>
+      </div>
+   </div>
+</body>
+<script src="js/index.js" th:src="@{/resources/js/index.js}"></script>
+</html>

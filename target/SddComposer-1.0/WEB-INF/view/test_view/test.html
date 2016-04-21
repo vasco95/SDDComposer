@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Software Data Center Composer</title>
+</head>
+<body>
+<form role="form" th:object="${graph}" action="#" th:action="@{/test}" method="post">
+	<input type="text" id="jsongraph" th:field="*{jsonGraph}" required>
+	<button type="submit" class="btn btn-default">Submit</button>
+</form>    
+</body>
+</html>

@@ -1,0 +1,34 @@
+.sidebar-nav {
+   position: fixed;
+   height: 100%;
+   /*width: 100%;*/
+}
+.sidebar-nav .navbar .navbar-collapse {
+   padding: 0;
+   max-height: none;
+}
+.sidebar-nav .navbar ul {
+   float: none;
+   display: block;
+}
+.sidebar-nav .navbar li {
+   float: none;
+   display: block;
+   padding-right: 60px;
+   /*padding-left: 40px;*/
+}
+.sidebar-nav .navbar li a {
+   padding-top: 12px;
+   padding-bottom: 12px;
+}
+
+.full {
+   min-height: 100%;
+}
+
+#sketch {
+   width: 100%;
+   height: 512px;
+   border: 2px solid #666666;
+   /*background-image: url('http://etc.usf.edu/clipart/40600/40690/pb_sq_40690_lg.gif');*/
+}

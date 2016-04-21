@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<sddcconfig>
+	<vcenter>
+		<serverip>169.254.12.23</serverip>
+		<username>Administrator@vsphere.local</username>
+		<password>Vasco_123</password>
+	</vcenter>
+</sddcconfig>
