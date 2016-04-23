@@ -222,7 +222,7 @@ public class SddcMainController {
 		return "test_view/result";
 	}
 	
-	@RequestMapping(value = "/realize", method = RequestMethod.GET)
+	@RequestMapping(value = "/realize", method = RequestMethod.POST)
 	public String realizeGraph(@ModelAttribute JsonGraph graph, ModelMap model) {
 		Graph newGraph = graphBuilder.getGraphFromJson(graph.getJsonGraph(), this.sessionUser.getUserName(), this.sessionGraph.getDesignName(), this.sessionGraph.getDescription());
 		newGraph.setGraphId(this.sessionGraph.getGraphId());

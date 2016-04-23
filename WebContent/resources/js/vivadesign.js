@@ -334,7 +334,7 @@ function submitGraph(){
 	finalObj["links"] = linkArray;
 	$('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
 	alert("Submitting");
-   $("#graphForm").attr("action", "./test");
+   $("#graphForm").attr("action", "./realize");
 	$("#graphForm").submit();
 }
 
@@ -388,5 +388,6 @@ function saveGraph() {
    $('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
    alert("Saving");
    $("#graphForm").attr("action", "./save");
-   $("#graphForm").submit();
+//   $("#graphForm").submit();
+   console.log(JSON.stringify(finalObj));
 }

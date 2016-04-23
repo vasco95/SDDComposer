@@ -11,8 +11,8 @@ public class VsphereTester {
 		VimPortType vimPort = vcon.getVimPort();
 		ServiceContent serviceContent = vcon.getServiceContent();
 		VmHandler vmHandler = new VmHandler(vimPort, serviceContent);
-		VmSpecInfo vmSpecInfo = new VmSpecInfo("freeBuntu", new Long(1024), 2, "windows7Guest", 20);
-		vmHandler.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45", "Resources", "vm");
+		VmSpecInfo vmSpecInfo = new VmSpecInfo("freeBuntu", new Long(1024), 2, "ubuntuGuest", 20);
+		vmHandler.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45");
 		vcon.disconnect();
 	}
 }

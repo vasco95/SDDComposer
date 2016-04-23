@@ -21,6 +21,7 @@ public class NetworkRealizer {
 	private VsphereConnector vsphereConnector;
 	public NetworkRealizer(Graph graph) {
 		this.graph = graph;
+		init();
 	}
 	/**
 	 * Intialize connection with vcenter server
@@ -39,10 +40,9 @@ public class NetworkRealizer {
 		VimPortType vimPort = this.vsphereConnector.getVimPort();
 		ServiceContent serviceContent = this.vsphereConnector.getServiceContent();
 		VmHandler vmCreator = new VmHandler(vimPort, serviceContent);
-		Conversions converter = new Conversions();
 		for(int i = 0; i < 1; i++) {
-			VmSpecInfo vmSpecInfo = converter.convertToVmSpecInfo(vmList[i]);
-			vmCreator.realizeVm(vmSpecInfo, "hostNetwork", "169.254.145.22", "Resources", "vm");
+			VmSpecInfo vmSpecInfo = Conversions.convertToVmSpecInfo(vmList[i]);
+			vmCreator.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45");
 		}
 	}
 	

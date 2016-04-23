@@ -80,7 +80,7 @@ class VmInfo extends Node {
 	private int cpuCores;
 	private int	ram;
 	private int storage;
-	private String vmOsType;
+	private String ostype;
 	/**
 	 * @return RAM of vm
 	 */
@@ -103,7 +103,7 @@ class VmInfo extends Node {
 	 * @return Os type of vm
 	 */
 	public String getVmOsType() {
-		return this.vmOsType;
+		return this.ostype;
 	}
 	/**
 	 * @return string representation of the vm info

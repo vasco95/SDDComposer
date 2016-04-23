@@ -9,7 +9,8 @@ class Conversions {
 	/**
 	 * @return Returns VmSpecInfo Object for vm
 	 */
-	public VmSpecInfo convertToVmSpecInfo(VmInfo vmInfo) {
+	public static VmSpecInfo convertToVmSpecInfo(VmInfo vmInfo) {
+		System.out.println(vmInfo.getVmOsType());
 		VmSpecInfo vmSpec = new VmSpecInfo(vmInfo.getName(), vmInfo.getRam(), vmInfo.getCpuCores(), vmInfo.getVmOsType(), vmInfo.getStorage());
 		return vmSpec;
 	}

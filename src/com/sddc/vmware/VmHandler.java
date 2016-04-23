@@ -3,12 +3,14 @@
  */
 package com.sddc.vmware;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vmware.vim25.AlreadyExistsFaultMsg;
+import com.vmware.vim25.ArrayOfManagedObjectReference;
 import com.vmware.vim25.ConfigTarget;
 import com.vmware.vim25.DuplicateNameFaultMsg;
 import com.vmware.vim25.FileFaultFaultMsg;
@@ -49,44 +51,8 @@ public class VmHandler {
 	 * @param resourcePoolName Name of the resource pool
 	 * @param folderName name of the folder
 	 */
-	public void realizeVm(VmSpecInfo vmSpecInfo, String dcName, String hostIp, String resourcePoolName, String folderName) {
-		ManagedObjectReference rootFolder = this.serviceContent.getRootFolder();
-		//get Datacenter MOR
-		ManagedObjectReference dataCenter = this.mSelector.getMOREFByName(rootFolder, "Datacenter", dcName);
-		if(null == dataCenter) {
-			System.out.println("No such Datcenter");
-			return;
-		}
-		//get host MOR
-		ManagedObjectReference hostSystem = this.mSelector.getMOREFByName(rootFolder, "HostSystem", hostIp);
-		if(null == hostSystem) {
-			System.out.println("No such host");
-			return;
-		}
-		//get resourcePool MOR
-		ManagedObjectReference resourcePool = this.mSelector.getMOREFByName(rootFolder, "ResourcePool", resourcePoolName);
-		if(null == resourcePool) {
-			System.out.println("No such Resource Pool");
-			return;
-		}
-		//get folderMor
-		ManagedObjectReference folder = this.mSelector.getMOREFByName(rootFolder, "Folder", folderName);
-		if(null == folder) {
-			System.out.println("No such Folder");
-			return;
-		}
-//		VirtualMachineConfigSpec vmSpecs = vmSpecInfo.createVmConfig();
-//		try {
-//			this.vimPort.createVMTask(folder, vmSpecs, resourcePool, hostSystem);
-//		} catch (AlreadyExistsFaultMsg | DuplicateNameFaultMsg | FileFaultFaultMsg | InsufficientResourcesFaultFaultMsg
-//				| InvalidDatastoreFaultMsg | InvalidNameFaultMsg | InvalidStateFaultMsg | OutOfBoundsFaultMsg
-//				| RuntimeFaultFaultMsg | VmConfigFaultFaultMsg e) {
-//			System.out.println("Error");
-//			e.printStackTrace();
-//		}
-	}
-
-	public void createVm(VmSpecInfo vmSpecInfo, String dcName, String hostIp, String resourcePoolName, String folderName) { 	
+	public void createVm(VmSpecInfo vmSpecInfo, String dcName, String hostIp) {
+		logger.info("Creating Virtual Machine");
 		ManagedObjectReference rootFolder = this.serviceContent.getRootFolder();
 		//Get Datacenter MOR
 		ManagedObjectReference dcMor = this.mSelector.getMOREFByName(rootFolder, "Datacenter", dcName);
@@ -117,11 +83,31 @@ public class VmHandler {
 			logger.error("No vm folder");
 			return;
 		}
+		//Get the created vm folder for the network
+		ArrayOfManagedObjectReference folderArray = (ArrayOfManagedObjectReference) this.mSelector.getEntityProps(vmFolderMor, new String[] {"childEntity"}).get("childEntity");
+		List<ManagedObjectReference> folderList = folderArray.getManagedObjectReference();
+		ManagedObjectReference customFolderMor = null;
+		Iterator<ManagedObjectReference> i = folderList.iterator();
+		while(i.hasNext()) {
+			ManagedObjectReference tmpMor = i.next();
+			if(tmpMor.getType().equals("Folder")) {
+				String folderName = (String)this.mSelector.getEntityProps(tmpMor, new String[] {"name"}).get("name");
+				if(folderName.equals("sddcNetwork")); {
+					customFolderMor = tmpMor;
+					break;
+				}
+			}
+			logger.info(tmpMor.getType() + " = " + tmpMor.getValue());
+		}
+		if(customFolderMor == null) {
+			logger.error("No vm folder");
+			return;
+		}
 		//Now that all required MOR are avaialable we create vmconfigspec and add devices to it
 		VirtualMachineConfigSpec vmConfig = vmSpecInfo.createVmConfig(this.getConfigTarget(crMor, hostMor), this.getDefaultDevices(crMor, hostMor), "datastore1");
 		try {
 			@SuppressWarnings("unused")
-			ManagedObjectReference taskMor = this.vimPort.createVMTask(vmFolderMor, vmConfig, resourcePoolMor, hostMor);
+			ManagedObjectReference taskMor = this.vimPort.createVMTask(customFolderMor, vmConfig, resourcePoolMor, hostMor);
 		} catch (AlreadyExistsFaultMsg | DuplicateNameFaultMsg | FileFaultFaultMsg
 				| InsufficientResourcesFaultFaultMsg | InvalidDatastoreFaultMsg | InvalidNameFaultMsg
 				| InvalidStateFaultMsg | OutOfBoundsFaultMsg | RuntimeFaultFaultMsg | VmConfigFaultFaultMsg e) {
