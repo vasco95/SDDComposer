@@ -134,7 +134,7 @@ function getNewElement(type) {
       tmpVm.cpuCores = 1;  //in number
       tmpVm.ram = 1024; //in mb
       tmpVm.storage = 16;  //in gb
-      tmpVm.ostype = "linux";
+      tmpVm.ostype = "ubuntuGuest";
 
       getNewElement.vmCount++;
       return tmpVm;

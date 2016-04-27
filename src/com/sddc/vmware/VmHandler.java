@@ -15,13 +15,17 @@ import com.vmware.vim25.ConfigTarget;
 import com.vmware.vim25.DuplicateNameFaultMsg;
 import com.vmware.vim25.FileFaultFaultMsg;
 import com.vmware.vim25.InsufficientResourcesFaultFaultMsg;
+import com.vmware.vim25.InvalidCollectorVersionFaultMsg;
 import com.vmware.vim25.InvalidDatastoreFaultMsg;
 import com.vmware.vim25.InvalidNameFaultMsg;
+import com.vmware.vim25.InvalidPropertyFaultMsg;
 import com.vmware.vim25.InvalidStateFaultMsg;
+import com.vmware.vim25.LocalizedMethodFault;
 import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.OutOfBoundsFaultMsg;
 import com.vmware.vim25.RuntimeFaultFaultMsg;
 import com.vmware.vim25.ServiceContent;
+import com.vmware.vim25.TaskInfoState;
 import com.vmware.vim25.VimPortType;
 import com.vmware.vim25.VirtualMachineConfigSpec;
 import com.vmware.vim25.VmConfigFaultFaultMsg;
@@ -35,6 +39,7 @@ public class VmHandler {
 	private VimPortType vimPort;
 	private ServiceContent serviceContent;
 	private MOREFSelector mSelector;
+	private ManagedObjectReference graphFolderMor = null;
 	private static final Logger logger = LoggerFactory.getLogger(VmHandler.class);
 	
 	public VmHandler(VimPortType vimPort, ServiceContent serviceContent) {
@@ -51,8 +56,8 @@ public class VmHandler {
 	 * @param resourcePoolName Name of the resource pool
 	 * @param folderName name of the folder
 	 */
-	public void createVm(VmSpecInfo vmSpecInfo, String dcName, String hostIp) {
-		logger.info("Creating Virtual Machine");
+	public void createVm(VmSpecInfo vmSpecInfo, String dcName, String hostIp, String folderName) {
+		logger.info("Creating Virtual Machine in folder " + folderName);
 		ManagedObjectReference rootFolder = this.serviceContent.getRootFolder();
 		//Get Datacenter MOR
 		ManagedObjectReference dcMor = this.mSelector.getMOREFByName(rootFolder, "Datacenter", dcName);
@@ -78,40 +83,56 @@ public class VmHandler {
 			logger.error("No resources pool found");
 			return;
 		}
+		//get vmFolderMor for datacenter
 		ManagedObjectReference vmFolderMor = (ManagedObjectReference) this.mSelector.getEntityProps(dcMor, new String[] {"vmFolder"}).get("vmFolder");
 		if(vmFolderMor == null) {
 			logger.error("No vm folder");
 			return;
 		}
+		
 		//Get the created vm folder for the network
-		ArrayOfManagedObjectReference folderArray = (ArrayOfManagedObjectReference) this.mSelector.getEntityProps(vmFolderMor, new String[] {"childEntity"}).get("childEntity");
-		List<ManagedObjectReference> folderList = folderArray.getManagedObjectReference();
-		ManagedObjectReference customFolderMor = null;
-		Iterator<ManagedObjectReference> i = folderList.iterator();
-		while(i.hasNext()) {
-			ManagedObjectReference tmpMor = i.next();
-			if(tmpMor.getType().equals("Folder")) {
-				String folderName = (String)this.mSelector.getEntityProps(tmpMor, new String[] {"name"}).get("name");
-				if(folderName.equals("sddcNetwork")); {
-					customFolderMor = tmpMor;
-					break;
+		if(this.graphFolderMor == null) {
+			//create a vm folder for the network
+			ManagedObjectReference newFolderMor = this.getGraphFolderMor(dcMor, folderName);
+			if(newFolderMor == null) {
+				logger.info("Folder Creation Failed");
+				return;
+			}
+			ArrayOfManagedObjectReference folderArray = (ArrayOfManagedObjectReference) this.mSelector.getEntityProps(vmFolderMor, new String[] {"childEntity"}).get("childEntity");
+			List<ManagedObjectReference> folderList = folderArray.getManagedObjectReference();
+			ManagedObjectReference customFolderMor = null;
+			Iterator<ManagedObjectReference> i = folderList.iterator();
+			while(i.hasNext()) {
+				ManagedObjectReference tmpMor = i.next();
+				if(tmpMor.getType().equals("Folder")) {
+					String tmpName = (String)this.mSelector.getEntityProps(tmpMor, new String[] {"name"}).get("name");
+					if(tmpName.equals(folderName)) {
+						customFolderMor = tmpMor;
+						logger.info("Folder found = " + tmpName);
+						break;
+					}
 				}
 			}
-			logger.info(tmpMor.getType() + " = " + tmpMor.getValue());
+			if(customFolderMor == null) {
+				logger.error("No vm folder");
+				return;
+			}
+			this.graphFolderMor = customFolderMor;
 		}
-		if(customFolderMor == null) {
-			logger.error("No vm folder");
-			return;
-		}
+		
 		//Now that all required MOR are avaialable we create vmconfigspec and add devices to it
 		VirtualMachineConfigSpec vmConfig = vmSpecInfo.createVmConfig(this.getConfigTarget(crMor, hostMor), this.getDefaultDevices(crMor, hostMor), "datastore1");
 		try {
-			@SuppressWarnings("unused")
-			ManagedObjectReference taskMor = this.vimPort.createVMTask(customFolderMor, vmConfig, resourcePoolMor, hostMor);
+			ManagedObjectReference taskMor = this.vimPort.createVMTask(this.graphFolderMor, vmConfig, resourcePoolMor, hostMor);
+			if(true == this.waitForEventToComplete(taskMor)) {
+				logger.info("Creation of vm = " + vmSpecInfo.getVmName());
+			}
+			else {
+				logger.info("Failed to create vm = " + vmSpecInfo.getVmName());
+			}
 		} catch (AlreadyExistsFaultMsg | DuplicateNameFaultMsg | FileFaultFaultMsg
 				| InsufficientResourcesFaultFaultMsg | InvalidDatastoreFaultMsg | InvalidNameFaultMsg
 				| InvalidStateFaultMsg | OutOfBoundsFaultMsg | RuntimeFaultFaultMsg | VmConfigFaultFaultMsg e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -151,5 +172,47 @@ public class VmHandler {
 			logger.debug("Cannot find Virtual Device Info");
 		}
 		return retList;
+	}
+	
+	private ManagedObjectReference getGraphFolderMor(ManagedObjectReference dcMor, String folderName) {
+		ManagedObjectReference vmFolderMor = (ManagedObjectReference) this.mSelector.getEntityProps(dcMor, new String[] {"vmFolder"}).get("vmFolder");
+		if(vmFolderMor == null) {
+			logger.error("No vm folder");
+			return null;
+		}
+		ManagedObjectReference folderMor = null;
+		try {
+			folderMor = this.vimPort.createFolder(vmFolderMor, folderName);
+		} catch (DuplicateNameFaultMsg e) {
+			e.printStackTrace();
+		} catch (InvalidNameFaultMsg e) {
+			e.printStackTrace();
+		} catch (RuntimeFaultFaultMsg e) {
+			e.printStackTrace();
+		} 
+		return folderMor;
+	}
+	
+	private boolean getResultsForTask(ManagedObjectReference task) throws InvalidPropertyFaultMsg, RuntimeFaultFaultMsg, InvalidCollectorVersionFaultMsg {
+        boolean retVal = false;
+        WaitForValues waitForValues = new WaitForValues(this.vimPort, this.serviceContent);
+        Object[] result = waitForValues.wait(task, new String[]{"info.state", "info.error"}, new String[]{"state"}, new Object[][]{new Object[]{ TaskInfoState.SUCCESS, TaskInfoState.ERROR}});
+        if (result[0].equals(TaskInfoState.SUCCESS)) {
+            retVal = true;
+        }
+        if (result[1] instanceof LocalizedMethodFault) {
+            throw new RuntimeException(((LocalizedMethodFault) result[1]).getLocalizedMessage());
+        }
+        return retVal;
+    }
+	
+	private boolean waitForEventToComplete(ManagedObjectReference task) {
+		boolean ret = false;
+		try {
+			ret = this.getResultsForTask(task);
+		} catch (InvalidPropertyFaultMsg | RuntimeFaultFaultMsg | InvalidCollectorVersionFaultMsg e) {
+			e.printStackTrace();
+		}
+		return ret;
 	}
 }

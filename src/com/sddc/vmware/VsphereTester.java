@@ -10,9 +10,11 @@ public class VsphereTester {
 		vcon.printApiInfo();
 		VimPortType vimPort = vcon.getVimPort();
 		ServiceContent serviceContent = vcon.getServiceContent();
-		VmHandler vmHandler = new VmHandler(vimPort, serviceContent);
-		VmSpecInfo vmSpecInfo = new VmSpecInfo("freeBuntu", new Long(1024), 2, "ubuntuGuest", 20);
-		vmHandler.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45");
+//		VmHandler vmHandler = new VmHandler(vimPort, serviceContent);
+//		VmSpecInfo vmSpecInfo = new VmSpecInfo("freeBuntu", new Long(1024), 2, "ubuntuGuest", 20);
+//		vmHandler.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45", "new_folder");
+		NetworkHandler networkHandler = new NetworkHandler(vimPort, serviceContent);
+		networkHandler.createVirtualSwitch("sddcSwitch", "169.254.124.45");
 		vcon.disconnect();
 	}
 }

@@ -179,4 +179,8 @@ public class VmSpecInfo {
 	private Long gbToKb(int gb) {
 		return new Long(gb * 1024 * 1024);
 	}
+	
+	public String getVmName() {
+		return this.vmName;
+	}
 }

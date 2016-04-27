@@ -27,3 +27,7 @@ ManagedObjectReference - for accessing managed objects at server (ie Getting a "
 VimServiceLocator - for identifying and accessing vcenter webservice
 VimPortType - endpoint for accessing the service. the object is obtained from VimServiceLocator
 ServiceContent - Accesses managed object services
+
+
+1. Create Folder for new design and creat all vms in in
+2. Check whether vm creation was a success	

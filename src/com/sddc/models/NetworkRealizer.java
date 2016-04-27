@@ -40,9 +40,10 @@ public class NetworkRealizer {
 		VimPortType vimPort = this.vsphereConnector.getVimPort();
 		ServiceContent serviceContent = this.vsphereConnector.getServiceContent();
 		VmHandler vmCreator = new VmHandler(vimPort, serviceContent);
-		for(int i = 0; i < 1; i++) {
+		String folderName = this.graph.getUsername() + "_" + this.graph.getDesignName();
+		for(int i = 0; i < vmList.length; i++) {
 			VmSpecInfo vmSpecInfo = Conversions.convertToVmSpecInfo(vmList[i]);
-			vmCreator.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45");
+			vmCreator.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45", folderName);
 		}
 	}
 	
