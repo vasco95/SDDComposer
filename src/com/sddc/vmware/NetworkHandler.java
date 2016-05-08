@@ -28,6 +28,11 @@ public class NetworkHandler {
 		this.mSelector = new MOREFSelector(vimPort, serviceContent);
 	}
 
+	/**
+	 * Creates a virtual switch on a host
+	 * @param switchName Name of switch
+	 * @param hostName host on which switch is deployed
+	 */
 	public void createVirtualSwitch(String switchName, String hostName) {
 		ManagedObjectReference rootFolder = this.serviceContent.getRootFolder();
 		//Get Hostsystem MOR
@@ -61,7 +66,7 @@ public class NetworkHandler {
 		portgrp.setName(portGroupName);
 		portgrp.setVswitchName(switchName);
 		portgrp.setPolicy(new HostNetworkPolicy());
-
+	
     	try {
 			vimPort.addPortGroup(nwSystem, portgrp);
 		} catch (AlreadyExistsFaultMsg e) {

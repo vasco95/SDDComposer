@@ -2,6 +2,7 @@ package com.sddc.models.datacollectors;
 
 public class UserDesignInput {
 	private String designId;
+	private String dname;
 	
 	public UserDesignInput() { }
 	/**
@@ -16,5 +17,13 @@ public class UserDesignInput {
 	 */
 	public String getDesignId() {
 		return this.designId;
+	}
+	
+	public void setDname(String dname) {
+		this.dname = dname;
+	}
+	
+	public String getDname() {
+		return this.dname;
 	}
 }

@@ -388,6 +388,6 @@ function saveGraph() {
    $('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
    alert("Saving");
    $("#graphForm").attr("action", "./save");
-//   $("#graphForm").submit();
    console.log(JSON.stringify(finalObj));
+   $("#graphForm").submit();
 }

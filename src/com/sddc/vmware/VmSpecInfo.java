@@ -21,6 +21,7 @@ import com.vmware.vim25.VirtualDeviceConfigSpecFileOperation;
 import com.vmware.vim25.VirtualDeviceConfigSpecOperation;
 import com.vmware.vim25.VirtualDisk;
 import com.vmware.vim25.VirtualDiskFlatVer2BackingInfo;
+import com.vmware.vim25.VirtualE1000;
 import com.vmware.vim25.VirtualEthernetCard;
 import com.vmware.vim25.VirtualEthernetCardNetworkBackingInfo;
 import com.vmware.vim25.VirtualIDEController;
@@ -32,6 +33,7 @@ public class VmSpecInfo {
 	private int cpuCores;
 	private String vmOsType = "windows7Guest";
 	private int storageInGB;
+	private String portgroup = "default";
 	
 	public VmSpecInfo (String vmName, Long ram, int cpuCores, String vmOsType, int storage) {
 		this.vmName = vmName;
@@ -39,6 +41,14 @@ public class VmSpecInfo {
 		this.cpuCores = cpuCores;
 		this.vmOsType = vmOsType;
 		this.storageInGB = storage;
+	}
+	
+	/**
+	 * Sets portgroup name for the vm
+	 * @param pgname Name of the port group
+	 */
+	public void setPortGroup(String pgname) {
+		this.portgroup = pgname;
 	}
 
 	public VirtualMachineConfigSpec createVmConfig(ConfigTarget configTarget, List<VirtualDevice> deviceList, String datastoreName) throws RuntimeException{
@@ -51,11 +61,14 @@ public class VmSpecInfo {
 				NetworkSummary netSum = netInfo.getNetwork();
 				if(netSum.isAccessible()) {
 					networkName = netSum.getName();
-					break;
+					System.out.println(networkName);
+					if(this.portgroup.equals(netSum.getName())){
+						break;
+					}
 				}
 			}
 		}
-		//We add datastore info to vm herea
+		//We add datastore info to vm here
 		ManagedObjectReference dsMor = null;
 		String dsName = null;
 		boolean dsFlag = false;
@@ -147,7 +160,13 @@ public class VmSpecInfo {
         VirtualDeviceConfigSpec nicSpec = new VirtualDeviceConfigSpec();
         if (networkName != null) {
             nicSpec.setOperation(VirtualDeviceConfigSpecOperation.ADD);
-            VirtualEthernetCard nic = new VirtualPCNet32();
+            VirtualEthernetCard nic;
+            if(this.vmOsType.charAt(0) == 'w') {
+            	nic = new VirtualE1000(); //VirtualE1000 for windows
+            }
+            else {
+            	nic = new VirtualPCNet32(); //VirtualPCNet32 for linux
+            }	
             VirtualEthernetCardNetworkBackingInfo nicBacking = new VirtualEthernetCardNetworkBackingInfo();
             nicBacking.setDeviceName(networkName);
             nic.setAddressType("generated");

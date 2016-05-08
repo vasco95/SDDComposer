@@ -29,5 +29,8 @@ VimPortType - endpoint for accessing the service. the object is obtained from Vi
 ServiceContent - Accesses managed object services
 
 
-1. Create Folder for new design and creat all vms in in
-2. Check whether vm creation was a success	
+1. Create Folder for new design and creat all vms in it - done
+2. Check whether vm creation was a success	- done
+3. create a vss - done
+4. create portgroups - done
+5. create routers

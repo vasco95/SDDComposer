@@ -10,7 +10,7 @@ class Node {
 		VM, ROUTER, SUBNET
 	}
 	
-	protected int id;
+	public int id;
 	private String type;
 	protected String name;
 	
@@ -24,6 +24,13 @@ class Node {
 	 */
 	public int getId() {
 		return this.id;
+	}
+	
+	/**
+	 * Sets id of node
+	 */
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	/**
@@ -56,6 +63,7 @@ class Node {
 		}
 		return this.nodeType;
 	}
+		
 	/**
 	 * @param typeCheck
 	 * @return true if typeCheck matches nodeType, false otherwise
@@ -130,14 +138,11 @@ class SubnetInfo extends Node {
  * Class that represents link in network graph
  */
 class Link {
-	private int fromId;
-	private int toId;
+	public int fromId;
+	public int toId;
 	
 	public Link() {}
 	
-	/**
-	 * @return string representation of the link
-	 */
 	@Override
 	public String toString() {
 		return new String("{fromId: " + this.fromId + ", toId: " + this.toId + "}");

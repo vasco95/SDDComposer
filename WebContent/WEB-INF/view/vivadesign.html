@@ -70,7 +70,7 @@
                      <li><a class="dropdown-toggle" data-toggle="dropdown" href="#">Create a new Network</a>
                         <ul class="dropdown-menu">
                            <li><a data-target="#blankDesign" data-toggle="modal" href="#blankDesign">Blank network</a></li>
-                           <li><a href="#">Use Existing Template</a></li>
+                           <li><a data-target="#templateDesign" data-toggle="modal" href="#templateDesign">Use Existing Template</a></li>
                         </ul>
                      </li>
                      <li><a data-target="#userDesigns" data-toggle="modal" href="#userDesign">My Networks</a></li>
@@ -116,6 +116,40 @@
             <!-- <div class="modal-footer">
                <button type="button" class="btn btn-default" data-dixsiss="modal">Close</button>
             </div> -->
+         </div>
+      </div>
+   </div>
+
+   <div class="modal fade" id="templateDesign" role="dialog">
+      <div class="modal-dialog">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dixsiss="modal">&times;</button>
+               <h4 class="modal-title">Select a Template</h4>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" role="form" th:object="${userDesignInput}" action="#" th:action="@{/templatedesign}" method="post">
+                 <div class="form-group">
+                     <label class="control-label col-xs-3" for="dname">Design Name: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" id="dname" placeholder="Name" th:field="*{dname}" required>
+                     </div>
+                 </div>
+                 <div class="form-group">
+                    <div class="col-xs-offset-1">
+                       <select th:field="*{designId}" class="selectpicker" data-live-search="true" id="designName" name="designName" data-width="auto">
+                          <option th:each="templateDesign : ${templateDropDown}" th:value="${templateDesign.key}" th:text="${templateDesign.value}" />
+                       </select>
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <div class="col-xs-offset-1">
+                       <button type="submit" class="btn btn-default">Submit</button>
+                    </div>
+                 </div>
+              </form>
+            </div>
          </div>
       </div>
    </div>
