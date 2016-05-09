@@ -125,7 +125,7 @@ public class VmHandler {
 		try {
 			ManagedObjectReference taskMor = this.vimPort.createVMTask(this.graphFolderMor, vmConfig, resourcePoolMor, hostMor);
 			if(true == this.waitForEventToComplete(taskMor)) {
-				logger.info("Creation of vm = " + vmSpecInfo.getVmName());
+				logger.info("Creation of vm = " + vmSpecInfo.getVmName() + " COMPLETE");
 			}
 			else {
 				logger.info("Failed to create vm = " + vmSpecInfo.getVmName());

@@ -85,7 +85,9 @@ public class Graph extends GraphTemplate{
 				}
 			}
 		}
-		return retList.toArray();
+		Object[] retListArray = new Object[retList.size()]; 
+		retList.toArray(retListArray);
+		return retListArray;
 	}
 	
 	public VmInfo[] getLinkedVms(SubnetInfo subnet) {
@@ -96,6 +98,33 @@ public class Graph extends GraphTemplate{
 				vmList.add((VmInfo)retList[i]);
 			}
 		}
-		return (VmInfo[])vmList.toArray();
+		VmInfo[] retVmInfo = new VmInfo[vmList.size()];
+		vmList.toArray(retVmInfo);
+		return retVmInfo;
 	}
+//	public VmInfo[] getLinkedVms(SubnetInfo subnet) {
+//		int id = subnet.id;
+//		List<VmInfo> retList = new ArrayList<VmInfo>();
+//		for(int i = 0; i < this.links.length; i++) {
+//			Link link = this.links[i];
+//			int destId = -1;
+//			if(link.fromId == id) {
+//				destId = link.toId;
+//			}
+//			else if(link.toId == id) {
+//				destId = link.fromId;
+//			}
+//			if(destId != -1) {
+//				Node tmpNode = this.nodes[destId];
+//				if(tmpNode.checkNodeType(Node.NodeType.VM)) {
+//					for(int j = 0; j < this.vms.length; j++) {
+//						if(this.vms[j].id == destId) {
+//							retList.add(this.vms[j]);
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return (VmInfo[]) retList.toArray();
+//	}
 }

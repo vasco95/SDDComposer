@@ -3,6 +3,9 @@ package com.sddc.vmware;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vmware.vim25.ConfigTarget;
 import com.vmware.vim25.DatastoreSummary;
 import com.vmware.vim25.ManagedObjectReference;
@@ -34,6 +37,7 @@ public class VmSpecInfo {
 	private String vmOsType = "windows7Guest";
 	private int storageInGB;
 	private String portgroup = "default";
+	private static Logger logger = LoggerFactory.getLogger(VmSpecInfo.class);
 	
 	public VmSpecInfo (String vmName, Long ram, int cpuCores, String vmOsType, int storage) {
 		this.vmName = vmName;
@@ -61,13 +65,17 @@ public class VmSpecInfo {
 				NetworkSummary netSum = netInfo.getNetwork();
 				if(netSum.isAccessible()) {
 					networkName = netSum.getName();
-					System.out.println(networkName);
+					logger.info(networkName);
 					if(this.portgroup.equals(netSum.getName())){
 						break;
 					}
 				}
 			}
 		}
+		if(this.portgroup.equals(networkName) == false) {
+			logger.error("Port Group does not exist");
+		}
+		networkName = this.portgroup; 
 		//We add datastore info to vm here
 		ManagedObjectReference dsMor = null;
 		String dsName = null;

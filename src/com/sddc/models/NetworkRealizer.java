@@ -7,8 +7,6 @@ import com.sddc.vmware.NetworkHandler;
 import com.sddc.vmware.VmHandler;
 import com.sddc.vmware.VmSpecInfo;
 import com.sddc.vmware.VsphereConnector;
-import com.vmware.vim25.ServiceContent;
-import com.vmware.vim25.VimPortType;
 /**
  * @author vasco
  * Objectives
@@ -19,7 +17,7 @@ import com.vmware.vim25.VimPortType;
 public class NetworkRealizer {
 	private Graph graph;
 	private NetworkHandler networkHandler;
-	
+	private VmHandler vmCreator;
 	private VsphereConnector vsphereConnector;
 	public NetworkRealizer(Graph graph) {
 		this.graph = graph;
@@ -32,6 +30,7 @@ public class NetworkRealizer {
 		this.vsphereConnector = new VsphereConnector();
 		this.vsphereConnector.connect();
 		this.networkHandler = new NetworkHandler(this.vsphereConnector.getVimPort(), this.vsphereConnector.getServiceContent());
+		this.vmCreator = new VmHandler(this.vsphereConnector.getVimPort(), this.vsphereConnector.getServiceContent());
 		this.vsphereConnector.printApiInfo();
 	}
 	
@@ -40,7 +39,13 @@ public class NetworkRealizer {
 	 * @param subnets
 	 */
 	public void createSubnet(String subnetName) {
-		this.networkHandler.createVirtualPortGroup("sddcSwitch", "169.254.124.45", subnetName);
+		String pgname = this.graph.getUsername() + "_" + this.graph.getDesignName() + "_" + subnetName;
+		this.networkHandler.createVirtualPortGroup("sddcSwitch", "169.254.124.45", pgname);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -48,14 +53,12 @@ public class NetworkRealizer {
 	 * @param vmList List of type VmInfo
 	 */
 	private void realizeVms(final VmInfo[] vmList , String subnetName) {
-		VimPortType vimPort = this.vsphereConnector.getVimPort();
-		ServiceContent serviceContent = this.vsphereConnector.getServiceContent();
-		VmHandler vmCreator = new VmHandler(vimPort, serviceContent);
+		String pgname = this.graph.getUsername() + "_" + this.graph.getDesignName() + "_" + subnetName;
 		String folderName = this.graph.getUsername() + "_" + this.graph.getDesignName();
 		for(int i = 0; i < vmList.length; i++) {
 			VmSpecInfo vmSpecInfo = Conversions.convertToVmSpecInfo(vmList[i]);
-			vmSpecInfo.setPortGroup(subnetName);
-			vmCreator.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45", folderName);
+			vmSpecInfo.setPortGroup(pgname);
+			this.vmCreator.createVm(vmSpecInfo, "hostNetwork", "169.254.124.45", folderName);
 		}
 	}
 	
@@ -70,7 +73,7 @@ public class NetworkRealizer {
 		SubnetInfo[] subnets = this.graph.getSubnetList();
 		for(int i = 0; i < subnets.length; i++) {
 			this.createSubnet(subnets[i].getName());
-			VmInfo[] vms = this.graph.getLinkedVms(subnets[i]);
+			VmInfo[] vms = (VmInfo[])this.graph.getLinkedVms(subnets[i]);
 			this.realizeVms(vms, subnets[i].getName());
 		}
 	}
