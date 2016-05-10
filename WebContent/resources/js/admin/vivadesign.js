@@ -17,7 +17,7 @@ function nodeDisplay(node) {
    var ui = Viva.Graph.svg('g');
    var nodeObj = node.data;
    var text = Viva.Graph.svg('text').text(nodeObj.name).attr('width', nodeObj.name.size).attr('height', nodeObj.name.size).attr('id', 'nodeText_'+nodeObj.id),
-   img = Viva.Graph.svg('image').attr('width', widths[nodeObj.type]).attr('height', heights[nodeObj.type]).attr('id', 'nodeImg_'+nodeObj.id).link('resources/images/' + nodeObj.type + '.png');
+   img = Viva.Graph.svg('image').attr('width', widths[nodeObj.type]).attr('height', heights[nodeObj.type]).attr('id', 'nodeImg_'+nodeObj.id).link('../resources/images/' + nodeObj.type + '.png');
    ui.append(img);
    ui.append(text);
    ui.type = nodeObj.type;
@@ -61,7 +61,6 @@ function init() {
    $("#addSubnet").click(addSubnet);
    $('#connectionToggle').change(addConnection);
    $("#save").click(saveGraph);
-   $("#realize").click(submitGraph);
 
    //Initializing functions
    $('input[name="connectionToggle"]').attr('checked', false);
@@ -236,11 +235,11 @@ function addNewLink(node) {
    }
    else {
       destNode = node;
-      if(destNode.type == addNewLink.sourceNode.type) {
+      if(destNode.data.type == addNewLink.sourceNode.data.type) {
          if(destNode.type != "router") {
             alert("Cannot connect two similar component");
-            addNewLink.sourceFlag = false;\
-            // return;
+            addNewLink.sourceFlag = false;
+            return;
          }
       }
       if(destNode.id != addNewLink.sourceNode.id)
@@ -317,32 +316,6 @@ function editSubnet() {
    }
    graph.addNode(currentNodeId, newSubnet.data);
    $('#editSubnet').modal('hide');
-}
-
-function submitGraph(){
-	var ser = Viva.Graph.serializer();
-	var jgraph = ser.storeToJSON(graph);
-	var newObj = JSON.parse(jgraph);
-
-	var finalNodes = new Array();
-
-	var nodeArray = new Array();
-	nodeArray = newObj.nodes;
-	var nodeLen = nodeArray.length;
-	for(var i = 0; i < nodeLen; i++) {
-	   var tmpObj = nodeArray[i].data;
-	   finalNodes.push(tmpObj);
-	}
-
-	var linkArray = newObj.links;
-
-	var finalObj = new Object();
-	finalObj["nodes"] = finalNodes;
-	finalObj["links"] = linkArray;
-	$('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
-	alert("Submitting");
-   $("#graphForm").attr("action", "./realize");
-	$("#graphForm").submit();
 }
 
 function printJSON(){

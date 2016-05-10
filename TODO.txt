@@ -33,4 +33,14 @@ ServiceContent - Accesses managed object services
 2. Check whether vm creation was a success	- done
 3. create a vss - done
 4. create portgroups - done
-5. create routers
+5. create routers - ?
+
+1. create a interface for admin
+2. create a setup for initial stage through the admin panel
+	-create database
+		-create users collection
+		-create graphs collection
+		-create templates collection
+	-create sddcNetwork
+	-create sddcSwitch
+3. create aprove user page

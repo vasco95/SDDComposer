@@ -29,7 +29,7 @@
           <div class="container-fluid">
             <div class="row">
                <div class="col-xs-10">
-                             <img id="logo-main" src="resources/images/logo.png" th:src="@{/resources/images/logo.png}" width="300" height="70" alt="Logo Thing main logo">
+               		<img id="logo-main" src="resources/images/logo.png" th:src="@{/resources/images/logo.png}" width="300" height="70" alt="Logo Thing main logo">
                </div>
                <div class="col-xs-2">
                   <h4> Welcome: <strong th:text="${user.userName}">user</strong></h4>
@@ -39,17 +39,14 @@
       </div>
       <nav class="navbar navbar-inverse">
          <div class="container-fluid">
-            <!-- <div class="navbar-header">
-               <a class="navbar-brand" href="#">WebSiteName</a>
-            </div> -->
             <ul class="nav navbar-nav">
-               <li><a href="home.html" th:href="@{/home}">Home</a></li>
-               <li class="active"><a href="design.html" th:href="@{/design}">Design</a></li>
-               <li><a href="help.html" th:href="@{/help}">Help</a></li>
+               <li><a href="home.html" th:href="@{/admin/home}">Home</a></li>
+               <li class="active"><a href="template.html" th:href="@{/admin/template}">Template</a></li>
+               <li><a href="help.html" th:href="@{/admin/help}">Help</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-               <li><a href="about.html" th:href="@{/about}">About</a></li>
-               <li><a href="login.html" th:href="@{/logout}">Logout</a></li>
+               <li><a href="about.html" th:href="@{/admin/about}">About</a></li>
+               <li><a href="login.html" th:href="@{/admin/logout}">Logout</a></li>
             </ul>
          </div>
       </nav>
@@ -65,7 +62,11 @@
                         <li id="addRouter"><a>New Router</a></li>
                         <li id="addSubnet"><a>New Subnet</a></li>
                         <li><a>Route: <input data-toggle="toggle" type="checkbox"  id="connectionToggle" name="editOption"></a></li>
-                        <li id="save"><a>Save</a></li>
+                        <br>
+                        <div class="col-xs-offset-1">
+                           <button type="submit" class="btn btn-default" onclick="saveGraph()">Save Template</button>
+                        </div>
+                        <br>
                      </ul>
                   </div>
                </div>
@@ -82,8 +83,6 @@
                            <li><a data-target="#templateDesign" data-toggle="modal" href="#templateDesign">Use Existing Template</a></li>
                         </ul>
                      </li>
-                     <li><a data-target="#userDesigns" data-toggle="modal" href="#userDesign">My Networks</a></li>
-                     <li id="realize"><a>Realize</a></li>
                   </ul>
                </div>
             </nav>
@@ -99,10 +98,10 @@
          <div class="modal-content">
             <div class="modal-header">
                <button type="button" class="close" data-dixsiss="modal">&times;</button>
-               <h4 class="modal-title">Creat new design</h4>
+               <h4 class="modal-title">Creat new template</h4>
             </div>
             <div class="modal-body">
-               <form class="form-horizontal" role="form" th:object="${graph}" action="#" th:action="@{/newdesign}" method="post">
+               <form class="form-horizontal" role="form" th:object="${graph}" action="#" th:action="@{/admin/newdesign}" method="post">
                   <div class="form-group">
                      <label class="control-label col-xs-3" for="dname">Design Name: </label>
                      <div class="col-xs-9">
@@ -122,9 +121,6 @@
                   </div>
                </form>
             </div>
-            <!-- <div class="modal-footer">
-               <button type="button" class="btn btn-default" data-dixsiss="modal">Close</button>
-            </div> -->
          </div>
       </div>
    </div>
@@ -138,7 +134,7 @@
                <h4 class="modal-title">Select a Template</h4>
             </div>
             <div class="modal-body">
-              <form class="form-horizontal" role="form" th:object="${userDesignInput}" action="#" th:action="@{/templatedesign}" method="post">
+              <form class="form-horizontal" role="form" th:object="${userDesignInput}" action="#" th:action="@{/admin/templatedesign}" method="post">
                  <div class="form-group">
                      <label class="control-label col-xs-3" for="dname">Design Name: </label>
                      <div class="col-xs-9">
@@ -158,34 +154,6 @@
                     </div>
                  </div>
               </form>
-            </div>
-         </div>
-      </div>
-   </div>
-
-   <div class="modal fade" id="userDesigns" role="dialog">
-      <div class="modal-dialog">
-         <!-- Modal content-->
-         <div class="modal-content">
-            <div class="modal-header">
-               <button type="button" class="close" data-dixsiss="modal">&times;</button>
-               <h4 class="modal-title">Select a Design</h4>
-            </div>
-            <div class="modal-body">
-               <form class="form-horizontal" role="form" th:object="${userDesignInput}" action="#" th:action="@{/userdesign}" method="post">
-                  <div class="form-group">
-                     <div class="col-xs-offset-1">
-                        <select th:field="*{designId}" class="selectpicker" data-live-search="true" id="designName" name="designName" data-width="auto">
-                           <option th:each="userDesign : ${userGraphDropDown}" th:value="${userDesign.key}" th:text="${userDesign.value}" />
-                        </select>
-                     </div>
-                  </div>
-                  <div class="form-group">
-                     <div class="col-xs-offset-1">
-                        <button type="submit" class="btn btn-default">Submit</button>
-                     </div>
-                  </div>
-               </form>
             </div>
          </div>
       </div>
@@ -320,7 +288,7 @@
 		<input type="hidden" id="jsonGraph" name="jsonGraph" th:field="*{jsonGraph}" required>
 	</form>
    <p id="jgraph" th:text="${jgraph}" hidden></p>
-   <script src="../../resources/js/vivadesign.js" th:src="@{/resources/js/vivadesign.js}"></script>
+   <script src="../../resources/js/vivadesign.js" th:src="@{/resources/js/admin/vivadesign.js}"></script>
    <script type="text/javascript">
       $("#ram").on("change mousemove", function() {
          $("#rambox").html($(this).val());

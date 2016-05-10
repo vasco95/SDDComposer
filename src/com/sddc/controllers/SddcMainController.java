@@ -15,11 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -118,33 +119,37 @@ public class SddcMainController {
 		}
 		model.addAttribute("jgraph", graphBuilder.getJsonFromGraph(this.sessionGraph));	//graph is built from this json
 		model.addAttribute("graph", this.sessionGraph.getJsonGraph()); // This attribute is used for getting design name, description and final json
+		model.addAttribute("user", this.sessionUser);
 		return "vivadesign";
 	}
 
 	//Home Page
 	@RequestMapping("/home")
-	public String home()
+	public String home(ModelMap model)
 	{
 		if(this.sessionUser == null)
 			return "redirect:login";
+		model.addAttribute("user", this.sessionUser);
 		return "home";
 	}
 
 	//Help Documents
 	@RequestMapping("/help")
-	public String help()
+	public String help(ModelMap model)
 	{
 		if(this.sessionUser == null)
 			return "redirect:login";
+		model.addAttribute("user", this.sessionUser);
 		return "help";
 	}
 
 	//About this project
 	@RequestMapping("/about")
-	public String about()
+	public String about(ModelMap model)
 	{
 		if(this.sessionUser == null)
 			return "redirect:login";
+		model.addAttribute("user", this.sessionUser);
 		return "about";
 	}
 
