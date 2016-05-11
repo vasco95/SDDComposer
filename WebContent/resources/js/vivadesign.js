@@ -236,11 +236,11 @@ function addNewLink(node) {
    }
    else {
       destNode = node;
-      if(destNode.type == addNewLink.sourceNode.type) {
+      if(destNode.data.type == addNewLink.sourceNode.data.type) {
          if(destNode.type != "router") {
             alert("Cannot connect two similar component");
-            addNewLink.sourceFlag = false;\
-            // return;
+            addNewLink.sourceFlag = false;
+            return;
          }
       }
       if(destNode.id != addNewLink.sourceNode.id)
