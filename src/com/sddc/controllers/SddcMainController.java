@@ -252,17 +252,21 @@ public class SddcMainController {
 		return "test_view/result";
 	}
 	
-	@RequestMapping(value = "/realize", method = RequestMethod.POST)
-	public String realizeGraph(@ModelAttribute JsonGraph graph, ModelMap model) {
+	@RequestMapping(value="/wait", method = RequestMethod.POST)
+	public String waitScreen(@ModelAttribute JsonGraph graph, ModelMap model) {
 		Graph newGraph = graphBuilder.getGraphFromJson(graph.getJsonGraph(), this.sessionUser.getUserName(), this.sessionGraph.getDesignName(), this.sessionGraph.getDescription());
 		newGraph.setGraphId(this.sessionGraph.getGraphId());
-		this.graphRepo.save(newGraph);
 		this.sessionGraph = newGraph;
 		logger.info("Realizing network " + this.sessionGraph.getDesignName() + " for user " + this.sessionGraph.getUsername());
 		this.sessionGraph.normalize();
+		this.graphRepo.save(this.sessionGraph);
+		return "loading";
+	}
+	
+	@RequestMapping(value = "/realize", method = RequestMethod.POST)
+	public String realizeGraph(ModelMap model) {
 		NetworkRealizer netRealizer = new NetworkRealizer(this.sessionGraph);
 		netRealizer.createNetwork();
-		logger.info(this.sessionGraph.toString());
 		model.addAttribute("result", graphBuilder.getJsonFromGraph(this.sessionGraph));
 		return "test_view/result";	
 	}

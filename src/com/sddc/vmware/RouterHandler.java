@@ -227,7 +227,7 @@ public class RouterHandler {
                         logger.info("Import key: " + deviceKey);
                         logger.info("OvfFileItem device id: " + ovfFileItem.getDeviceId());
                         logger.info("HTTP Post file: " + ovfFileItem.getPath());
-                        String absoluteFile = localPath.substring(0, localPath.lastIndexOf("\\"));
+                        String absoluteFile = localPath.substring(0, localPath.lastIndexOf("/"));
                         absoluteFile = absoluteFile + "/" + ovfFileItem.getPath();
                         logger.info("Absolute path: " + absoluteFile);
                         this.getVMDKFile(ovfFileItem.isCreate(), absoluteFile, deviceUrl.getUrl().replace("*", hostIp), ovfFileItem.getSize());

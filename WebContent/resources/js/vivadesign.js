@@ -341,7 +341,7 @@ function submitGraph(){
 	finalObj["links"] = linkArray;
 	$('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
 	alert("Submitting");
-   $("#graphForm").attr("action", "./realize");
+   $("#graphForm").attr("action", "./wait");
 	$("#graphForm").submit();
 }
 
