@@ -60,7 +60,7 @@ function init() {
    $("#addVm").click(addVm);
    $("#addSubnet").click(addSubnet);
    $('#connectionToggle').change(addConnection);
-   $("#save").click(saveGraph);
+   // $("#save").click(saveGraph);
 
    //Initializing functions
    $('input[name="connectionToggle"]').attr('checked', false);

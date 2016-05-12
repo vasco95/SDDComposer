@@ -35,7 +35,7 @@ ServiceContent - Accesses managed object services
 4. create portgroups - done
 5. create routers - ?
 
-1. create a interface for admin
+1. create a interface for admin -done
 2. create a setup for initial stage through the admin panel
 	-create database
 		-create users collection
@@ -44,3 +44,8 @@ ServiceContent - Accesses managed object services
 	-create sddcNetwork
 	-create sddcSwitch
 3. create aprove user page
+
+last modifications
+1.change step in design
+2.waiting or loading page
+3.data structure handling on servre side

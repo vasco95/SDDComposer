@@ -242,11 +242,12 @@ public class SddcMainController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String saveGraph(@ModelAttribute JsonGraph graph, ModelMap model) {
 		Graph newGraph = graphBuilder.getGraphFromJson(graph.getJsonGraph(), this.sessionUser.getUserName(), this.sessionGraph.getDesignName(), this.sessionGraph.getDescription());
-//		newGraph.setGraphId(this.sessionGraph.getGraphId());
-		newGraph.setUserName("template");
-		this.templateRepo.save((GraphTemplate)newGraph);
+		newGraph.setGraphId(this.sessionGraph.getGraphId());
+		this.graphRepo.save(newGraph);
+//		newGraph.setUserName("template");
+//		this.templateRepo.save((GraphTemplate)newGraph);
 		this.sessionGraph = newGraph;
-//		logger.info(this.sessionGraph.toString());
+		logger.info(this.sessionGraph.toString());
 		model.addAttribute("result", graphBuilder.getJsonFromGraph(this.sessionGraph));
 		return "test_view/result";
 	}

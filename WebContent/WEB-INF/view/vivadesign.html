@@ -19,6 +19,9 @@
 
    <style type="text/css" media="screen">
 	svg { width: inherit; height: inherit;}
+   .btn-md {
+      padding: 10% 33%;
+    }
    </style>
    <title>Software Data Center Composer</title>
 </head>
@@ -65,7 +68,11 @@
                         <li id="addRouter"><a>New Router</a></li>
                         <li id="addSubnet"><a>New Subnet</a></li>
                         <li><a>Route: <input data-toggle="toggle" type="checkbox"  id="connectionToggle" name="editOption"></a></li>
-                        <li id="save"><a>Save</a></li>
+                        <br>
+                        <div class="col-xs-offset-1">
+                            <button type="submit" class="btn btn-primary" onclick="saveGraph()">Save Template</button>
+                        </div>
+                        <br>
                      </ul>
                   </div>
                </div>
@@ -83,8 +90,10 @@
                         </ul>
                      </li>
                      <li><a data-target="#userDesigns" data-toggle="modal" href="#userDesign">My Networks</a></li>
-                     <li id="realize"><a>Realize</a></li>
                   </ul>
+                  <ul class="nav navbar-nav navbar-right">
+               		<li><button type="submit" class="btn btn-primary btn-md" onclick="submitGraph()">Realize</button></li>
+            	   </ul>
                </div>
             </nav>
             <h4><small>Current Design:</small><strong id="currDesign" th:text="${graph.name}"> </strong></h4>
