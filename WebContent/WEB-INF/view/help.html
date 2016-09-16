@@ -20,7 +20,16 @@
 <body>
    <div class="container-fluid">
       <div class="page-header">
-            <img id="logo-main" src="resources/images/logo.png" th:src="@{/resources/images/logo.png}" width="300" height="70" alt="Logo Thing main logo">
+          <div class="container-fluid">
+            <div class="row">
+               <div class="col-xs-10">
+                             <img id="logo-main" src="resources/images/logo.png" th:src="@{/resources/images/logo.png}" width="300" height="70" alt="Logo Thing main logo">
+               </div>
+               <div class="col-xs-2">
+                  <h4> Welcome: <strong th:text="${user.userName}">user</strong></h4>
+               </div>
+            </div>
+         </div>
       </div>
       <nav class="navbar navbar-inverse">
          <div class="container-fluid">
@@ -28,9 +37,9 @@
                <a class="navbar-brand" href="#">WebSiteName</a>
             </div> -->
             <ul class="nav navbar-nav">
-               <li><a href="home.html" th:href="@{/home}">Home</a></li>
+               <li class="active"><a href="home.html" th:href="@{/home}">Home</a></li>
                <li><a href="design.html" th:href="@{/design}">Design</a></li>
-               <li class="active"><a href="help.html" th:href="@{/help}">Help</a></li>
+               <li><a href="help.html" th:href="@{/help}">Help</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                <li><a href="about.html" th:href="@{/about}">About</a></li>
@@ -38,9 +47,9 @@
             </ul>
          </div>
       </nav>
-      <div class="jumbotron">
-         <h2>Help!<br><small>Here we put help about the service.</small></h2>
-      </div>
+ 	  <div class="jumbotron">
+      	<h2>Help!<br><small>Here we put help about the service.</small></h2>
+     </div>
    </div>
 </body>
 </html>

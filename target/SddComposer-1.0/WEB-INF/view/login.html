@@ -9,16 +9,16 @@
     <script src="resources/js/bootstrap.min.js" th:src="@{/resources/js/bootstrap.min.js}"></script>
     <link href="resources/css/bootstrap-toggle.min.css" th:href="@{/resources/css/bootstrap-toggle.min.css}" rel="stylesheet">
     <script src="resources/js/bootstrap-toggle.min.js" th:src="@{/resources/js/bootstrap-toggle.min.js}"></script>
-    
+
 	<script>
 	$(window).load(function(){
         $('#loginModal').modal('show');
     });
 	</script>
-   
+
 </head>
 <body>
-<div class="modal fade" id="loginModal" role="dialog">
+   <div class="modal fade" id="loginModal" role="dialog">
       <div class="modal-dialog">
          <!-- Modal content-->
          <div class="modal-content">
@@ -44,15 +44,59 @@
                      <div class="col-xs-offset-3 col-xs-9">
                         <button type="submit" class="btn btn-default">Submit</button>
                      </div>
+                     <div class="col-xs-offset-8 col-xs-6">
+                        <a data-target="#regModal" data-toggle="modal" href="#regModal">New User Registration</a>
+                     </div>
                   </div>
                </form>
             </div>
-            <!-- <div class="modal-footer">
-               <button type="button" class="btn btn-default" data-dixsiss="modal">Close</button>
-            </div> -->
          </div>
       </div>
    </div>
-
+   <!-- New User Registration Form -->
+   <div class="modal fade" id="regModal" role="dialog">
+      <div class="modal-dialog">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dixsiss="modal">&times;</button>
+               <h4 class="modal-title">New User Registration</h4>
+            </div>
+            <div class="modal-body">
+               <form class="form-horizontal" role="form" th:object="${user}" action="#" th:action="@{/newuser}" method="post">
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="name">Name: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" id="name" placeholder="Name" th:field="*{name}" required>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="mis">MIS: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" id="mis" placeholder="MIS" th:field="*{mis}" required>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="username">Username: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" id="username" placeholder="Username" th:field="*{userName}" required>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <label class="control-label col-xs-3" for="password">Password: </label>
+                     <div class="col-xs-9">
+                           <input type="password" class="form-control" id="password" placeholder="Password" th:field="*{passWord}" required>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                     <div class="col-xs-offset-3 col-xs-9">
+                        <button type="submit" class="btn btn-default">Submit</button>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
 </body>
 </html>

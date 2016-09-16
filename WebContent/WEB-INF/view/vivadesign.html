@@ -19,6 +19,9 @@
 
    <style type="text/css" media="screen">
 	svg { width: inherit; height: inherit;}
+   .btn-md {
+      padding: 10% 33%;
+    }
    </style>
    <title>Software Data Center Composer</title>
 </head>
@@ -26,7 +29,16 @@
 <body onload="init()">
    <div class="container-fluid">
       <div class="page-header">
-         <img id="logo-main" src="../../resources/images/logo.png" th:src="@{/resources/images/logo.png}" width="300" height="70" alt="SDD Composer">
+          <div class="container-fluid">
+            <div class="row">
+               <div class="col-xs-10">
+                             <img id="logo-main" src="resources/images/logo.png" th:src="@{/resources/images/logo.png}" width="300" height="70" alt="Logo Thing main logo">
+               </div>
+               <div class="col-xs-2">
+                  <h4> Welcome: <strong th:text="${user.userName}">user</strong></h4>
+               </div>
+            </div>
+         </div>
       </div>
       <nav class="navbar navbar-inverse">
          <div class="container-fluid">
@@ -56,7 +68,11 @@
                         <li id="addRouter"><a>New Router</a></li>
                         <li id="addSubnet"><a>New Subnet</a></li>
                         <li><a>Route: <input data-toggle="toggle" type="checkbox"  id="connectionToggle" name="editOption"></a></li>
-                        <li id="save"><a>Save</a></li>
+                        <br>
+                        <div class="col-xs-offset-1">
+                            <button type="submit" class="btn btn-primary" onclick="saveGraph()">Save Template</button>
+                        </div>
+                        <br>
                      </ul>
                   </div>
                </div>
@@ -70,12 +86,14 @@
                      <li><a class="dropdown-toggle" data-toggle="dropdown" href="#">Create a new Network</a>
                         <ul class="dropdown-menu">
                            <li><a data-target="#blankDesign" data-toggle="modal" href="#blankDesign">Blank network</a></li>
-                           <li><a href="#">Use Existing Template</a></li>
+                           <li><a data-target="#templateDesign" data-toggle="modal" href="#templateDesign">Use Existing Template</a></li>
                         </ul>
                      </li>
                      <li><a data-target="#userDesigns" data-toggle="modal" href="#userDesign">My Networks</a></li>
-                     <li id="realize"><a>Realize</a></li>
                   </ul>
+                  <ul class="nav navbar-nav navbar-right">
+               		<li><button type="submit" class="btn btn-primary btn-md" onclick="submitGraph()">Realize</button></li>
+            	   </ul>
                </div>
             </nav>
             <h4><small>Current Design:</small><strong id="currDesign" th:text="${graph.name}"> </strong></h4>
@@ -116,6 +134,40 @@
             <!-- <div class="modal-footer">
                <button type="button" class="btn btn-default" data-dixsiss="modal">Close</button>
             </div> -->
+         </div>
+      </div>
+   </div>
+
+   <div class="modal fade" id="templateDesign" role="dialog">
+      <div class="modal-dialog">
+         <!-- Modal content-->
+         <div class="modal-content">
+            <div class="modal-header">
+               <button type="button" class="close" data-dixsiss="modal">&times;</button>
+               <h4 class="modal-title">Select a Template</h4>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" role="form" th:object="${userDesignInput}" action="#" th:action="@{/templatedesign}" method="post">
+                 <div class="form-group">
+                     <label class="control-label col-xs-3" for="dname">Design Name: </label>
+                     <div class="col-xs-9">
+                           <input type="text" class="form-control" id="dname" placeholder="Name" th:field="*{dname}" required>
+                     </div>
+                 </div>
+                 <div class="form-group">
+                    <div class="col-xs-offset-1">
+                       <select th:field="*{designId}" class="selectpicker" data-live-search="true" id="designName" name="designName" data-width="auto">
+                          <option th:each="templateDesign : ${templateDropDown}" th:value="${templateDesign.key}" th:text="${templateDesign.value}" />
+                       </select>
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <div class="col-xs-offset-1">
+                       <button type="submit" class="btn btn-default">Submit</button>
+                    </div>
+                 </div>
+              </form>
+            </div>
          </div>
       </div>
    </div>

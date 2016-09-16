@@ -9,6 +9,9 @@ var linkLength = 130;
 //Event Handlers
 var newLink;
 
+//edit operations
+var currentNodeId;
+
 //Node Display Utilities
 function nodeDisplay(node) {
    var ui = Viva.Graph.svg('g');
@@ -21,8 +24,12 @@ function nodeDisplay(node) {
    $(ui).click(function() {
       newLink(this.node);
    });
+   $(ui).dblclick(function () {
+      editNode(this.node);
+   });
    return ui;
 }
+
 function nodePlacement(nodeUI, pos) {
    // nodeUI.attr('x', pos.x - 12).attr('y', pos.y - 12);
    nodeUI.attr('transform', 'translate(' + (pos.x - widths[nodeUI.type]/2) + ',' + (pos.y - heights[nodeUI.type]/2) + ')');
@@ -30,9 +37,11 @@ function nodePlacement(nodeUI, pos) {
 
 //Link Display Utilities
 function linkDisplay(link) {
-   return Viva.Graph.svg('path')
-      .attr('stroke', 'gray')
-      .attr('file', 'none');
+   var ui = Viva.Graph.svg('path').attr('stroke', '#809fff').attr('file', 'none').attr('stroke-width', 4);
+   $(ui).dblclick(function () {
+      deleteLink(this.link);
+   });
+   return ui;
 }
 function linkPlacement(linkUI, fromPos, toPos) {
    // linkUI - is the object returned from link() callback above.
@@ -51,15 +60,29 @@ function init() {
    $("#addVm").click(addVm);
    $("#addSubnet").click(addSubnet);
    $('#connectionToggle').change(addConnection);
-   $("#done").click(printJSON);
-   $("#realize").click(submitGraph);
+   // $("#save").click(saveGraph);
+   // $("#realize").click(submitGraph);
 
    //Initializing functions
    $('input[name="connectionToggle"]').attr('checked', false);
    addNewLink.sourceFlag = false;
    newLink = disableNewLink;
    //Creating network graph
-   graph = Viva.Graph.graph();
+   // graph = Viva.Graph.graph();
+   var ser = Viva.Graph.serializer();
+   var jgraph = $("#jgraph").text();
+   graph = ser.loadFromJSON(jgraph);
+   var tmpObj = JSON.parse(jgraph);
+
+   //Initialising edit modals
+   // initVmModal();
+
+   //Initializing according to new graph
+   getNewElement.counter = tmpObj.nodes.length;
+   getNewElement.vmCount = tmpObj.vmcount;
+   getNewElement.routerCount = tmpObj.routercount;
+   getNewElement.subnetCount = tmpObj.subnetcount;
+
    var graphics = Viva.Graph.View.svgGraphics();
    graphics.node(nodeDisplay).placeNode(nodePlacement);
 
@@ -85,6 +108,7 @@ function init() {
    });
    renderer.run();
    // renderer.pause();
+   // console.log("After = " + ser.storeToJSON(graph));
    console.log("Loading done");
 }
 
@@ -110,6 +134,7 @@ function getNewElement(type) {
       tmpVm.cpuCores = 1;  //in number
       tmpVm.ram = 1024; //in mb
       tmpVm.storage = 16;  //in gb
+      tmpVm.ostype = "ubuntuGuest";
 
       getNewElement.vmCount++;
       return tmpVm;
@@ -118,6 +143,7 @@ function getNewElement(type) {
       if(getNewElement.routerCount == undefined){
          getNewElement.routerCount = 0;
       }
+      console.log(getNewElement.couter);
       //create a new id
       var id = getNewElement.counter;
       getNewElement.counter++;
@@ -153,6 +179,23 @@ function getNewElement(type) {
    return null;
 }
 
+function deleteNode() {
+   var currentNode = graph.getNode(currentNodeId);
+   console.log("Deleting " + currentNode.data.name);
+   var nodeText = document.getElementById('nodeText_' + currentNode.data.id);
+   var nodeImg = document.getElementById('nodeImg_' + currentNode.data.id);
+   nodeText.parentNode.removeChild(nodeText);
+   nodeImg.parentNode.removeChild(nodeImg);
+   graph.removeNode(currentNode.id);
+   $('#editVm').modal('hide');
+   $('#editRouter').modal('hide');
+   $('#editSubnet').modal('hide');
+}
+
+function deleteLink(link) {
+   graph.removeLink(link);
+}
+
 function addVm(){
    var newVm = getNewElement("vm");
    graph.addNode(newVm.id, newVm);
@@ -164,6 +207,7 @@ function addRouter(){
    graph.addNode(newRouter.id, newRouter);
    console.log("Adding new Router Router");
 }
+
 function addSubnet(){
    var newSubnet = getNewElement("subnet");
    graph.addNode(newSubnet.id, newSubnet);
@@ -192,7 +236,15 @@ function addNewLink(node) {
    }
    else {
       destNode = node;
-      graph.addLink(addNewLink.sourceNode.id, destNode.id);
+      if(destNode.data.type == addNewLink.sourceNode.data.type) {
+         if(destNode.type != "router") {
+            alert("Cannot connect two similar component");
+            addNewLink.sourceFlag = false;
+            return;
+         }
+      }
+      if(destNode.id != addNewLink.sourceNode.id)
+         graph.addLink(addNewLink.sourceNode.id, destNode.id);
       addNewLink.sourceFlag = false;
    }
 }
@@ -200,10 +252,71 @@ function addNewLink(node) {
 function disableNewLink(node) {
 }
 
-function printJSON(){
-   var ser = Viva.Graph.serializer();
-   var jgraph = ser.storeToJSON(graph);
-   console.log(jgraph);
+function editNode(node) {
+   currentNodeId = node.id;
+   if(node.data.type == "vm") { //load vm info in modal
+      // $("#vmname").html = node.data.name;
+      // $("#ram").html = node.data.ram;
+      // $("#storage").html = node.data.storage;
+      $("#vmname").val(node.data.name);
+      $("#ram").val(node.data.ram);
+      $("#rambox").html(node.data.ram);
+      $("#storage").val(node.data.storage);
+      $("#storagebox").html(node.data.storage);
+      $("#cpucores").val(node.data.cpuCores);
+      console.log(node.data.cpuCores);
+      $("#ostype").val(node.data.ostype);
+      console.log(node.data.ostype);
+      $('#editVm').modal('show');
+   }
+   else if(node.data.type == "router") {
+      $("#routername").val(node.data.name);
+      $('#editRouter').modal('show');
+   }
+   else if(node.data.type == "subnet") {
+      $("#subnetname").val(node.data.name);
+      $('#editSubnet').modal('show');
+   }
+}
+
+function editVm() {
+   var newVm = graph.getNode(currentNodeId);
+   if($('input[name="vmname"]').val())
+      newVm.data.name = $('input[name="vmname"]').val();
+   if($('input[name="ram"]').val())
+      newVm.data.ram = $('input[name="ram"]').val();
+   if($('input[name="storage"]').val())
+      newVm.data.storage = $('input[name="storage"]').val();
+
+   newVm.data.cpuCores = parseInt($("#cpucores option:selected").text());
+   newVm.data.ostype = $("#ostype option:selected").text();
+   // console.log($('input[name="vmname"]').val());
+   // console.log($('input[name="ram"]').val());
+   // console.log($('input[name="storage"]').val());
+   // console.log($("#cpucores option:selected").text());
+   // console.log($("#ostype option:selected").text());
+   // console.log(newVm);
+   graph.addNode(currentNodeId, newVm.data);
+   $('#editVm').modal('hide');
+}
+
+function editRouter() {
+   var newRouter = graph.getNode(currentNodeId);
+   if($('input[name="routername"]').val()) {
+      newRouter.data.name = $('input[name="routername"]').val();
+   }
+   graph.addNode(currentNodeId, newRouter.data);
+   $('#editRouter').modal('hide');
+}
+
+function editSubnet() {
+   console.log("yo");
+   var newSubnet = graph.getNode(currentNodeId);
+   if($('input[name="subnetname"]').val()) {
+      newSubnet.data.name = $('input[name="subnetname"]').val();
+   }
+   graph.addNode(currentNodeId, newSubnet.data);
+   $('#editSubnet').modal('hide');
 }
 
 function submitGraph(){
@@ -228,6 +341,7 @@ function submitGraph(){
 	finalObj["links"] = linkArray;
 	$('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
 	alert("Submitting");
+   $("#graphForm").attr("action", "./wait");
 	$("#graphForm").submit();
 }
 
@@ -237,6 +351,7 @@ function printJSON(){
 //	console.log(JSON.stringify(graph));
 	var ser = Viva.Graph.serializer();
 	var jgraph = ser.storeToJSON(graph);
+   console.log(jgraph);
 	var newObj = JSON.parse(jgraph);
 
 	var finalNodes = new Array();
@@ -255,4 +370,31 @@ function printJSON(){
 	finalObj["nodes"] = finalNodes;
 	finalObj["links"] = linkArray;
 	console.log(JSON.stringify(finalObj));
+}
+
+function saveGraph() {
+   var ser = Viva.Graph.serializer();
+   var jgraph = ser.storeToJSON(graph);
+   var newObj = JSON.parse(jgraph);
+
+   var finalNodes = new Array();
+
+   var nodeArray = new Array();
+   nodeArray = newObj.nodes;
+   var nodeLen = nodeArray.length;
+   for(var i = 0; i < nodeLen; i++) {
+      var tmpObj = nodeArray[i].data;
+      finalNodes.push(tmpObj);
+   }
+
+   var linkArray = newObj.links;
+
+   var finalObj = new Object();
+   finalObj["nodes"] = finalNodes;
+   finalObj["links"] = linkArray;
+   $('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
+   alert("Saving");
+   $("#graphForm").attr("action", "./save");
+   console.log(JSON.stringify(finalObj));
+   $("#graphForm").submit();
 }

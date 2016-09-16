@@ -60,8 +60,8 @@ function init() {
    $("#addVm").click(addVm);
    $("#addSubnet").click(addSubnet);
    $('#connectionToggle').change(addConnection);
-   $("#save").click(saveGraph);
-   $("#realize").click(submitGraph);
+   // $("#save").click(saveGraph);
+   // $("#realize").click(submitGraph);
 
    //Initializing functions
    $('input[name="connectionToggle"]').attr('checked', false);
@@ -134,7 +134,7 @@ function getNewElement(type) {
       tmpVm.cpuCores = 1;  //in number
       tmpVm.ram = 1024; //in mb
       tmpVm.storage = 16;  //in gb
-      tmpVm.ostype = "linux";
+      tmpVm.ostype = "ubuntuGuest";
 
       getNewElement.vmCount++;
       return tmpVm;
@@ -236,6 +236,13 @@ function addNewLink(node) {
    }
    else {
       destNode = node;
+      if(destNode.data.type == addNewLink.sourceNode.data.type) {
+         if(destNode.type != "router") {
+            alert("Cannot connect two similar component");
+            addNewLink.sourceFlag = false;
+            return;
+         }
+      }
       if(destNode.id != addNewLink.sourceNode.id)
          graph.addLink(addNewLink.sourceNode.id, destNode.id);
       addNewLink.sourceFlag = false;
@@ -334,7 +341,7 @@ function submitGraph(){
 	finalObj["links"] = linkArray;
 	$('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
 	alert("Submitting");
-   $("#graphForm").attr("action", "./realize");
+   $("#graphForm").attr("action", "./wait");
 	$("#graphForm").submit();
 }
 
@@ -388,6 +395,6 @@ function saveGraph() {
    $('input[name="jsonGraph"]').val(JSON.stringify(finalObj));
    alert("Saving");
    $("#graphForm").attr("action", "./save");
-//   $("#graphForm").submit();
    console.log(JSON.stringify(finalObj));
+   $("#graphForm").submit();
 }

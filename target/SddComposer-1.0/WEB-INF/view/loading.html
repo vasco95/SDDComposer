@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="../../resources/js/jquery-2.2.0.min.js" th:src="@{/resources/js/jquery-2.2.0.min.js}"></script>
+	<link href="resources/css/loading.css" th:href="@{/resources/css/loading.css}" rel="stylesheet">
+	
+	<title>Software Data Center Composer</title>
+	<script>
+		$.post("./realize", { }, function(data, status){
+		        alert("Status: " + status);
+		    });
+	</script>
+</head>
+<body>
+	<header class="header">
+		<div class="container">
+			<h1>Realizing Your Network!<br> Please Wait</h1>
+		</div>
+	</header>
+	<div class="container">
+		<div class="clear-loading loading-effect-2">
+			<span></span>
+		</div>
+	</div>
+</body>
+</html>
